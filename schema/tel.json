@@ -4,11 +4,19 @@
   "title": "Tel",
   "type": "object",
   "properties": {
-    "version": {
+    "program_name": {
+      "type": "string",
+      "description": "Program name"
+    },
+    "ir_version": {
       "type": "integer",
       "description": "The version of Tel IR"
+    },
+    "telc_version": {
+      "type": "integer",
+      "description": "The language version of the Tel compiler"
     }
   },
   "additionalProperties": false,
-  "minProperties": 2
+  "required": ["program_name", "ir_version", "telc_version"]
 }

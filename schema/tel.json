@@ -8,5 +8,7 @@
       "type": "integer",
       "description": "The version of Tel IR"
     }
-  }
+  },
+  "additionalProperties": false,
+  "minProperties": 2
 }

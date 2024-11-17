@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/type.proto";
+
+message Function {
+  string name = 1;
+  repeated TypeRef args = 2;
+  repeated TypeRef results = 3;
+}
+

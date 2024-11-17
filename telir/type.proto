@@ -1,0 +1,9 @@
+
+syntax = "proto3";
+package telir;
+
+message TypeRef {
+  //TODO @mark: could be something like `T` or `List<int>`
+  string name = 1;
+}
+

@@ -4,6 +4,7 @@ package telir;
 
 message SourceFile {
   string name = 1;
-  string source = 2;
+  uint32 index = 2;
+  string source = 3;
 }
 

@@ -13,4 +13,13 @@ The IR is specified in Protobuf3 format.
 
 While not as descriptive as e.g. json-schema, it has better support for generating fast code in a range of langauges.
 
+```bash
+rm -rf target/
+mkdir -p ./target/java ./target/python ./target/rust
+docker run -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=schema/ \
+    --java_out=./target/java \
+    --python_out=./target/python \
+    --rust_out=experimental-codegen=enabled,kernel=cpp:./target/rust \
+    schema/tel.proto
+```
 

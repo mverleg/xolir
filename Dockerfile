@@ -6,8 +6,14 @@
 FROM kubeless/unzip:latest AS download
 
 ADD "https://github.com/jsontypedef/json-typedef-codegen/releases/latest/download/x86_64-unknown-linux-musl.zip" "/x86_64-unknown-linux-musl.zip"
-RUN unzip "x86_64-unknown-linux-musl.zip"
+RUN unzip "x86_64-unknown-linux-musl.zip" -d /
 
 FROM scratch
 COPY --from=download /jtd-codegen /jtd-codegen
-# ENTRYPOINT ["/jtd-codegen"]
+
+WORKDIR /code
+
+ENTRYPOINT ["/jtd-codegen"]
+CMD ["schema/tel.json", \
+    "--typescript-out", "./target/typescript"]
+

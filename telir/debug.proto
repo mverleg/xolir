@@ -1,5 +1,5 @@
 
-syntax = "2023";
+syntax = "proto3";
 package telir;
 
 message SourceFile {

@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/debug.proto";
+
+message TelProgram {
+  string program_name = 1;
+  uint32 ir_version = 2;
+  uint32 telc_version = 3;
+  repeated SourceFile sources = 4;
+}
+

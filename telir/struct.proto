@@ -4,9 +4,8 @@ package telir;
 
 import "telir/type.proto";
 
-message Function {
+message Struct {
   string name = 1;
-  repeated TypedName args = 2;
-  repeated TypeRef results = 3;
+  repeated TypedName field = 2;
 }
 

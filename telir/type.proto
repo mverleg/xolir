@@ -7,3 +7,9 @@ message TypeRef {
   string name = 1;
 }
 
+message TypedName {
+  //TODO @mark: could be something like `T` or `List<int>`
+  string name = 1;
+  TypeRef typ = 2;
+}
+

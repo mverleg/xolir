@@ -15,8 +15,35 @@
     "telc_version": {
       "type": "integer",
       "description": "The language version of the Tel compiler"
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "structs": {
+      "type": "array",
+      "items": {
+        "$comment": "//TODO @mark",
+        "type": "string"
+      }
+    },
+    "functions": {
+      "type": "array",
+      "items": {
+        "$comment": "//TODO @mark",
+        "type": "string"
+      }
     }
   },
   "additionalProperties": false,
-  "required": ["program_name", "ir_version", "telc_version"]
+  "required": [
+    "program_name",
+    "ir_version",
+    "telc_version",
+    "sources",
+    "structs",
+    "functions"
+  ]
 }

@@ -1,0 +1,19 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/builtins.proto";
+
+message Expression {
+  oneof expr {
+    Call call = 10;
+  }
+}
+
+message Call {
+  oneof target {
+    BuiltinOp builtin = 10;
+    uint32 func_id = 11;
+  }
+  repeated int32 arguments = 1;
+}

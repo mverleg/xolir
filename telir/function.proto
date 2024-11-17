@@ -3,10 +3,13 @@ syntax = "proto3";
 package telir;
 
 import "telir/type.proto";
+import "telir/expression.proto";
 
 message Function {
-  string name = 1;
-  repeated TypedName args = 2;
-  repeated TypeRef results = 3;
+  uint32 id = 1;  // equal to 0-based array index, redundant?
+  string name = 2;
+  repeated TypedName args = 3;
+  repeated TypeRef results = 4;
+  //TODO @mark: statements?
+  Expression code = 5;
 }
-

@@ -1,16 +1,16 @@
 
 # Tel IR (schema)
 
-This provides the json schema that describes the intermediate representation (IR) for [Tel](https://github.com/mverleg/tel).
+## Goal
 
-By having a json schema for the IR, the backend codegen does not need to be in the same language as the frontend. Most popular languages can take in the IR as json, and do the code generation.
+When the [Tel](https://github.com/mverleg/tel) compiler has done parsing, checking and other steps, it is time to generate executable code. 
 
-This can perhaps be made easier by generating a parser and dataclasses from the schema, as described at 
+The goal of Tel is to generate code in multiple languages. To make this easier, code generation backends in multiple languages are supported. This IR is the intermediate format that Tel generates and that backends consume.
 
-You can generate dataclasses with [json-typedef](https://jsontypedef.com/docs/jtd-codegen/) using
+## Usage
 
-```bash
-docker build -t jtd . && \
-    docker run -v"$(pwd):/code" -it jtd
-```
+The IR is specified in Protobuf3 format.
+
+While not as descriptive as e.g. json-schema, it has better support for generating fast code in a range of langauges.
+
 

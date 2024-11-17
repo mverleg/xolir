@@ -1,0 +1,9 @@
+
+syntax = "2023";
+package telir;
+
+message SourceFile {
+  string name = 1;
+  string source = 2;
+}
+

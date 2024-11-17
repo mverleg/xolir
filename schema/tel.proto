@@ -1,0 +1,58 @@
+
+syntax = "2023";
+package telir;
+
+message TelProgram {
+  string program_name = 1;
+  uint32 ir_version = 2;
+  uint32 telc_version = 3;
+  repeated telir.SourceFile sources = 4;
+}
+
+
+/*
+        message PastedObject {
+           string $id = 1;
+ string $schema = 2;
+ string title = 3;
+ string type = 4;
+ Properties properties = 5;
+ bool additionalProperties = 6;
+repeated string required = 7;
+        }
+       message Properties {
+          Program_name program_name = 1;
+Ir_version ir_version = 2;
+Telc_version telc_version = 3;
+Sources sources = 4;
+Structs structs = 5;
+Structs functions = 6;
+       }
+       message Program_name {
+          string type = 1;
+string description = 2;
+       }
+       message Ir_version {
+          string type = 1;
+string description = 2;
+       }
+       message Telc_version {
+          string type = 1;
+string description = 2;
+       }
+       message Sources {
+          string type = 1;
+AdditionalProperties additionalProperties = 2;
+       }
+message AdditionalProperties {
+   string type = 1;
+}
+       message Structs {
+          string type = 1;
+Items items = 2;
+       }
+       message Items {
+          string $comment = 1;
+string type = 2;
+       }
+ */

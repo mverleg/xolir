@@ -28,3 +28,4 @@ cp -r static/* target
 zip -rq target/telir-python.zip "$PYTHON_BASE"
 zip -rq target/telir-java.zip "$JAVA_BASE"
 zip -rq target/telir-rust.zip "$RUST_BASE"
+

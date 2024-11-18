@@ -19,10 +19,6 @@ docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --rust_out=experimental-codegen=enabled,kernel=cpp:"$RUST_SRC" \
     telir/*.proto
 
-for py in "$PYTHON_SRC"/*_pb2.py; do
-    mv "$py" "${py::${#py}-7}.py"
-done
-
 cp LICENSE.txt "$PYTHON_BASE/"
 cp LICENSE.txt "$JAVA_BASE/"
 cp LICENSE.txt "$RUST_BASE/"

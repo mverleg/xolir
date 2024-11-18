@@ -2,8 +2,8 @@
 from os import path
 import sys
 
-gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/telir_py.zip'))
-assert path.exists(gen_pth), "run codegen first"
+gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/telir-python.zip'))
+assert path.exists(gen_pth), f"run codegen to generate {gen_pth}"
 sys.path.insert(0, gen_pth)
 
 from telir.builtins_pb2 import *

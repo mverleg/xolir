@@ -15,11 +15,12 @@ While not as descriptive as e.g. json-schema, it has better support for generati
 
 ```bash
 rm -rf target/
-mkdir -p ./target/java ./target/python ./target/rust
-docker run -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
+mkdir -p ./target/java ./target/rust
+docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --java_out=./target/java \
-    --python_out=./target/python \
+    --python_out=./target/telir_py.zip \
     --rust_out=experimental-codegen=enabled,kernel=cpp:./target/rust \
     telir/*.proto
+sudo chown $USER:$USER -R target/
 ```
 

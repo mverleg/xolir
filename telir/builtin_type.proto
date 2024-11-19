@@ -4,7 +4,8 @@ package telir;
 
 message BuiltinType {
   enum typ {
-    SINT_32 = 0;
-    FLOAT_64 = 1;
+    S_INT_32 = 0;
+    S_INT_64 = 1;
+    REAL_64 = 2;
   }
 }

@@ -9,7 +9,7 @@ message Function {
   uint32 id = 1;  // equal to 0-based array index, redundant?
   string name = 2;
   repeated TypedName args = 3;
-  repeated TypeRef result = 4;
+  repeated TypeRef results = 4;
   //TODO @mark: statements?
   //Expression code = 5;
 }

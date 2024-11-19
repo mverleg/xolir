@@ -1,0 +1,10 @@
+
+syntax = "proto3";
+package telir;
+
+message BuiltinType {
+  enum typ {
+    SINT_32 = 0;
+    FLOAT_64 = 1;
+  }
+}

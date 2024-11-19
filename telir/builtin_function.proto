@@ -2,8 +2,8 @@
 syntax = "proto3";
 package telir;
 
-message BuiltinOp {
-  enum op {
+message BuiltinFunc {
+  enum func {
     ADD_U32 = 0;
     SUB_U32 = 1;
     MUL_U32 = 2;

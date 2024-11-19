@@ -87,5 +87,8 @@ def even_fib_sub(max):
         ),
     ],
 )
+
 print(prog)
-print(prog.SerializeToString())
+with open(f'{prog.program_name}.telir', 'wb+') as f:
+    f.write(prog.SerializeToString())
+

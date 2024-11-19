@@ -89,6 +89,12 @@
                                     <minimizeJar>true</minimizeJar>
                                     <createSourcesJar>true</createSourcesJar>
                                     <shadeSourcesContent>true</shadeSourcesContent>
+                                    <relocations>
+                                        <relocation>
+                                            <pattern>com.google.</pattern>
+                                            <shadedPattern>shaded.telir.com.google.</shadedPattern>
+                                        </relocation>
+                                    </relocations>
                                 </configuration>
                             </execution>
                         </executions>

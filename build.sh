@@ -14,6 +14,7 @@ RUST_SRC="$RUST_BASE/src"
 
 mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
 
+echo 'compiling protoc'
 docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --python_out="$PYTHON_SRC/.." \
     --java_out="$JAVA_SRC" \
@@ -29,6 +30,7 @@ cp -r static/* target
 
 target="$(pwd)/target"
 (
+    echo 'packing python'
     cd "$PYTHON_BASE"
     zip -rq "$target/telir-python.zip" .
 )
@@ -36,7 +38,8 @@ target="$(pwd)/target"
     cd "$JAVA_BASE"
     echo 'compiling java'
     mvn package -q -Pfat-jar
-    mv "$(find -name "telir-fat-*-sources.jar")" "$target/telir-java.java"
+    echo PWD=$JAVA_BASE cp target/*.jar "$target/"
+    cp target/*.jar "$target/"
 )
 (
     cd "$RUST_BASE"

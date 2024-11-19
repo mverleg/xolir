@@ -37,12 +37,12 @@ message Call {
 }
 
 message If {
-  uint32 condition_var_ix = 1;
+  Expression condition = 1;
   repeated Expression code = 2;
 }
 
 message While {
-  uint32 condition_var_ix = 1;
+  Expression condition = 1;
   repeated Expression code = 2;
 }
 

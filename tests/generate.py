@@ -1,4 +1,3 @@
-
 from os import path
 import sys
 
@@ -14,7 +13,6 @@ from telir.function_pb2 import Function
 from telir.expression_pb2 import Expression, Read, Store, Call, If, While, Return
 from telir.debug_pb2 import SourceFile
 from telir.tel_pb2 import TelProgram
-
 
 prog = TelProgram(
     program_name='euler2',
@@ -59,21 +57,31 @@ def even_fib_sub(max):
                 TypedName(name="sum", typ=TypeRef(builtin=BuiltinType.S_INT_64)),  # 1
                 TypedName(name="first", typ=TypeRef(builtin=BuiltinType.S_INT_64)),  # 2
                 TypedName(name="second", typ=TypeRef(builtin=BuiltinType.S_INT_64)),  # 3
-                TypedName(name="_1", typ=TypeRef(builtin=BuiltinType.BOOL)),  # 4
-                TypedName(name="new", typ=TypeRef(builtin=BuiltinType.S_INT_64)),  # 5
+                TypedName(name="new", typ=TypeRef(builtin=BuiltinType.S_INT_64)),  # 4
             ],
             code=[
                 Expression(store=Store(var_ix=1, value=Expression(int=0))),
                 Expression(store=Store(var_ix=2, value=Expression(int=1))),
                 Expression(store=Store(var_ix=3, value=Expression(int=1))),
-                Expression(store=Store(var_ix=4, value=Expression(int=1))),
-                Expression(while_=While(condition_var_ix=4, code=[
-                    Expression(store=Store(var_ix=2, value=Expression(call=Call(builtin=BuiltinFunc.ADD_S64, arguments=[
-                        Expression(read=Read(var_ix=2)), Expression(read=Read(var_ix=3))])))),
-                    Expression(if_=If(condition_var_ix=4, code=[todo])),
-                    Expression(store=Store(var_ix=2, value=Expression(read=Read(var_ix=3)))),
-                    Expression(store=Store(var_ix=3, value=Expression(read=Read(var_ix=5)))),
-                ])),
+                Expression(
+                    while_=While(
+                        condition=Expression(call=Call(builtin=BuiltinFunc.LT_S64, arguments=[
+                            Expression(read=Read(var_ix=3)), Expression(read=Read(var_ix=0))])),
+                        code=[
+                            Expression(store=Store(var_ix=2,
+                                value=Expression(call=Call(builtin=BuiltinFunc.ADD_S64, arguments=[
+                                    Expression(read=Read(var_ix=2)), Expression(read=Read(var_ix=3))])))),
+                            Expression(if_=If(
+                                condition=Expression(call=Call(builtin=BuiltinFunc.MOD_S64, arguments=[
+                                    Expression(read=Read(var_ix=4)), Expression(int=2)])),
+                                code=[
+                                    Expression(store=Store(var_ix=1,
+                                        value=Expression(call=Call(builtin=BuiltinFunc.ADD_S64, arguments=[
+                                            Expression(read=Read(var_ix=1)), Expression(read=Read(var_ix=4))])))),
+                                ])),
+                            Expression(store=Store(var_ix=2, value=Expression(read=Read(var_ix=3)))),
+                            Expression(store=Store(var_ix=3, value=Expression(read=Read(var_ix=4)))),
+                        ])),
                 Expression(return_=Return(var_ix=1)),
             ],
         ),
@@ -81,4 +89,3 @@ def even_fib_sub(max):
 )
 print(prog)
 print(prog.SerializeToString())
-

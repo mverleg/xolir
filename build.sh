@@ -8,10 +8,11 @@ PYTHON_BASE=./target/python
 PYTHON_SRC="$PYTHON_BASE/telir"
 JAVA_BASE=./target/java
 JAVA_SRC="$JAVA_BASE/src/main/java/telir"
+JAVA_RESOURCE="$JAVA_BASE/src/main/resources"
 RUST_BASE=./target/rust
 RUST_SRC="$RUST_BASE/src"
 
-mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$RUST_SRC"
+mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
 
 docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --python_out="$PYTHON_SRC/.." \
@@ -21,6 +22,7 @@ docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
 
 cp LICENSE.txt "$PYTHON_BASE/"
 cp LICENSE.txt "$JAVA_BASE/"
+cp LICENSE.txt "$JAVA_RESOURCE/"
 cp LICENSE.txt "$RUST_BASE/"
 
 cp -r static/* target
@@ -32,7 +34,9 @@ target="$(pwd)/target"
 )
 (
     cd "$JAVA_BASE"
-    zip -rq "$target/telir-java.zip" .
+    echo 'compiling java'
+    mvn package -q -Pfat-jar
+    mv "$(find -name "telir-fat-*-sources.jar")" "$target/telir-java.java"
 )
 (
     cd "$RUST_BASE"

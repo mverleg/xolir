@@ -6,6 +6,8 @@ gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/telir-python
 assert path.exists(gen_pth), f"run codegen to generate {gen_pth}"
 sys.path.insert(0, gen_pth)
 
+from telir import builtin_type_pb2
+from telir.builtin_type_pb2 import BuiltinType
 from telir.type_pb2 import TypeRef, TypedName
 from telir.struct_pb2 import Struct
 from telir.function_pb2 import Function
@@ -38,11 +40,12 @@ prog = TelProgram(
         Function(
             id=0,
             name="euler",
-            args=[TypedName("max", TypeRef())],
-            results=[TypeRef()],
+            args=[TypedName(name="max", typ=TypeRef(builtin=BuiltinType.S_INT_64))],
+            results=[TypeRef(builtin=BuiltinType.S_INT_64)],
         ),
     ],
 )
+
 print(prog)
 print(prog.SerializeToString())
 

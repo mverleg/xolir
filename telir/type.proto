@@ -1,10 +1,14 @@
 
 syntax = "proto3";
 package telir;
+import "telir/builtin_type.proto";
+
 
 message TypeRef {
   //TODO @mark: could be something like `T` or `List<int>`
-  string name = 1;
+  oneof target {
+    BuiltinType builtin = 10;
+  }
   //TODO @mark: oneof builtin, struct, generic...
 }
 

@@ -2,10 +2,8 @@
 syntax = "proto3";
 package telir;
 
-message BuiltinType {
-  enum typ {
-    S_INT_32 = 0;
-    S_INT_64 = 1;
-    REAL_64 = 2;
-  }
+enum BuiltinType {
+  S_INT_32 = 0;
+  S_INT_64 = 1;
+  REAL_64 = 2;
 }

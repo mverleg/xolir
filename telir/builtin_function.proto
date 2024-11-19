@@ -2,11 +2,9 @@
 syntax = "proto3";
 package telir;
 
-message BuiltinFunc {
-  enum func {
-    ADD_U32 = 0;
-    SUB_U32 = 1;
-    MUL_U32 = 2;
-    DIV_U32 = 3;
-  }
+enum BuiltinFunc {
+  ADD_U32 = 0;
+  SUB_U32 = 1;
+  MUL_U32 = 2;
+  DIV_U32 = 3;
 }

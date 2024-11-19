@@ -6,8 +6,21 @@ import "telir/builtin_function.proto";
 
 message Expression {
   oneof expr {
-    Call call = 10;
+    Read read = 10;
+    Store store = 11;
+    Call call = 12;
+    If if = 13;
+    While while = 14;
   }
+}
+
+message Read {
+  uint32 var_ix = 1;
+  Expression code = 2;
+}
+
+message Store {
+  uint32 var_ix = 1;
 }
 
 message Call {
@@ -16,4 +29,14 @@ message Call {
     uint32 func_id = 11;
   }
   repeated int32 arguments = 1;
+}
+
+message If {
+  uint32 condition_var_ix = 1;
+  repeated Expression code = 2;
+}
+
+message While {
+  uint32 condition_var_ix = 1;
+  repeated Expression code = 2;
 }

@@ -7,4 +7,8 @@ enum BuiltinFunc {
   SUB_U32 = 1;
   MUL_U32 = 2;
   DIV_U32 = 3;
+  ADD_S64 = 4;
+  SUB_S64 = 5;
+  MUL_S64 = 6;
+  DIV_S64 = 7;
 }

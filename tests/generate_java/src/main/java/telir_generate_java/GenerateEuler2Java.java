@@ -1,12 +1,5 @@
 package telir_generate_java;
 
-import telir.BuiltinTypeOuterClass;
-import telir.FunctionOuterClass;
-import telir.StructOuterClass;
-import telir.Type;
-
-import static telir.Tel.TelProgram;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +9,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static telir.BuiltinTypeOuterClass.BuiltinType;
+import static telir.ExpressionOuterClass.Expression;
+import static telir.FunctionOuterClass.Function;
+import static telir.StructOuterClass.Struct;
+import static telir.Tel.TelProgram;
+import static telir.Type.TypedName;
 
 public class GenerateEuler2Java {
     private static final Set<String> KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "void", "volatile", "while");
@@ -70,7 +70,7 @@ public class GenerateEuler2Java {
         }
     }
 
-    private static void compileStructs(PrintWriter writer, List<StructOuterClass.Struct> structs) {
+    private static void compileStructs(PrintWriter writer, List<Struct> structs) {
         for (var cls : structs) {
             String safeClsName = safeName(cls.getName(), true);
             if (!safeClsName.equals(cls.getName())) {
@@ -82,7 +82,7 @@ public class GenerateEuler2Java {
         }
     }
 
-    private static void compileFunctions(PrintWriter writer, List<FunctionOuterClass.Function> functions) {
+    private static void compileFunctions(PrintWriter writer, List<Function> functions) {
         for (var func : functions) {
             assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
             String safeFuncName = safeName(func.getName(), false);
@@ -101,12 +101,54 @@ public class GenerateEuler2Java {
                 writer.println("\t\t" + javaType +
                         " " + javaName + ";");
             }
-            writer.println("\t\t// TODO: code");
+            for (var expr : func.getCodeList()) {
+                writer.print("\t\t");
+                compileExpression(writer, expr, variables);
+                writer.println(";");
+            }
             writer.println("\t}\n");
         }
     }
 
-    private static ArrayList<Variable> generateArgument(List<Type.TypedName> argList, PrintWriter writer) {
+    private static void compileExpression(PrintWriter writer, Expression expr, List<Variable> variables) {
+        switch (expr.getExprCase()) {
+            case READ -> {
+                writer.write(variables.get(expr.getRead().getVarIx()).name());
+            }
+            case STORE -> {
+                writer.write(variables.get(expr.getStore().getVarIx()).name() + " = ");
+                compileExpression(writer, expr.getStore().getValue(), variables);
+            }
+            case CALL -> {
+                writer.write("/* TODO: CALL */");  //TODO @mark:
+            }
+            case IF_ -> {
+                writer.write("/* TODO: IF_ */");  //TODO @mark:
+            }
+            case WHILE_ -> {
+                writer.write("/* TODO: WHILE_ */");  //TODO @mark:
+            }
+            case RETURN_ -> {
+                writer.write("/* TODO: RETURN_ */");  //TODO @mark:
+            }
+            case INT -> {
+                writer.write(String.valueOf(expr.getInt()));
+            }
+            case REAL -> {
+                writer.write(String.valueOf(expr.getReal()));
+            }
+            case TEXT -> {
+                assert !expr.getText().contains("\""): "strings with double-quotes not supported yet";
+                writer.write(expr.getText());
+            }
+            case BOOL -> {
+                writer.write(expr.getBool() ? "true" : "false");
+            }
+            case EXPR_NOT_SET -> throw new AssertionError("expression type not recognized");
+        }
+    }
+
+    private static ArrayList<Variable> generateArgument(List<TypedName> argList, PrintWriter writer) {
         var variables = new ArrayList<Variable>(argList.size());
         if (argList.isEmpty()) {
             return variables;
@@ -127,7 +169,7 @@ public class GenerateEuler2Java {
         return variables;
     }
 
-    private static String builtinType(BuiltinTypeOuterClass.BuiltinType bultinType) {
+    private static String builtinType(BuiltinType bultinType) {
         return switch (bultinType) {
             case S_INT_32 -> "int";
             case S_INT_64 -> "long";

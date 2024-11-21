@@ -1,6 +1,8 @@
 package telir_generate_java;
 
 import telir.BuiltinTypeOuterClass;
+import telir.FunctionOuterClass;
+import telir.StructOuterClass;
 import telir.Type;
 
 import static telir.Tel.TelProgram;
@@ -11,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -59,42 +62,56 @@ public class GenerateEuler2Java {
             }
             writer.println("\n@javax.annotation.processing.Generated(\"telir\")  // do not edit");
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
-            for (var cls : tel.getStructsList()) {
-                String safeClsName = safeName(cls.getName(), true);
-                if (!safeClsName.equals(cls.getName())) {
-                    writer.println("\t// " + cls.getName());
-                }
-                writer.print("\tprivate record " + safeClsName + "(");
-                generateArgument(cls.getFieldsList(), writer);
-                writer.println(") {}\n");
-            }
-            for (var func : tel.getFunctionsList()) {
-                assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
-                String safeFuncName = safeName(func.getName(), false);
-                if (!safeFuncName.equals(func.getName())) {
-                    writer.println("\t// " + func.getName());
-                }
-                writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
-                writer.print(" " + safeFuncName + "(");
-                generateArgument(func.getArgsList(), writer);
-                writer.println(") {");
-                for (var local : func.getLocalsList()) {
-                    writer.println("\t\t" + builtinType(local.getTyp().getBuiltin()) +
-                            " " + safeName(local.getName(), false) + ";");
-                }
-                writer.println("\t\t// TODO: code");
-                writer.println("\t}\n");
-            }
+            compileStructs(writer, tel.getStructsList());
+            compileFunctions(writer, tel.getFunctionsList());
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    private static void generateArgument(List<Type.TypedName> argList, PrintWriter writer) {
-        if (!argList.isEmpty()) {
-            writer.print("\n");
+    private static void compileStructs(PrintWriter writer, List<StructOuterClass.Struct> structs) {
+        for (var cls : structs) {
+            String safeClsName = safeName(cls.getName(), true);
+            if (!safeClsName.equals(cls.getName())) {
+                writer.println("\t// " + cls.getName());
+            }
+            writer.print("\tprivate record " + safeClsName + "(");
+            generateArgument(cls.getFieldsList(), writer);
+            writer.println(") {}\n");
         }
+    }
+
+    private static void compileFunctions(PrintWriter writer, List<FunctionOuterClass.Function> functions) {
+        for (var func : functions) {
+            assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
+            String safeFuncName = safeName(func.getName(), false);
+            if (!safeFuncName.equals(func.getName())) {
+                writer.println("\t// " + func.getName());
+            }
+            writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
+            writer.print(" " + safeFuncName + "(");
+            var arg_vars = generateArgument(func.getArgsList(), writer);
+            var variables = new ArrayList<Variable>(arg_vars);
+            writer.println(") {");
+            for (var local : func.getLocalsList()) {
+                var javaType = builtinType(local.getTyp().getBuiltin());
+                var javaName = safeName(local.getName(), false);
+                variables.add(new Variable(javaType, javaName));
+                writer.println("\t\t" + javaType +
+                        " " + javaName + ";");
+            }
+            writer.println("\t\t// TODO: code");
+            writer.println("\t}\n");
+        }
+    }
+
+    private static ArrayList<Variable> generateArgument(List<Type.TypedName> argList, PrintWriter writer) {
+        var variables = new ArrayList<Variable>(argList.size());
+        if (argList.isEmpty()) {
+            return variables;
+        }
+        writer.print("\n");
         boolean first = true;
         for (var field : argList) {
             if (first) {
@@ -102,11 +119,12 @@ public class GenerateEuler2Java {
             } else {
                 writer.print(",\n");
             }
-            writer.print("\t\t" + builtinType(field.getTyp().getBuiltin()) + " " + safeName(field.getName(), false));
+            var javaType = builtinType(field.getTyp().getBuiltin());
+            var javaName = safeName(field.getName(), false);
+            writer.print("\t\t" + javaType + " " + javaName);
         }
-        if (!argList.isEmpty()) {
-            writer.print("\n\t");
-        }
+        writer.print("\n\t");
+        return variables;
     }
 
     private static String builtinType(BuiltinTypeOuterClass.BuiltinType bultinType) {
@@ -118,6 +136,8 @@ public class GenerateEuler2Java {
             case UNRECOGNIZED -> throw new AssertionError("unrecognized type");
         };
     }
+
+    private record Variable(String type, String name) {}
 
     private static String safeName(String rawName, boolean isType) {
         //TODO @mark: it's possible that the_thing and TheThing and up colliding

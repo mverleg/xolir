@@ -92,7 +92,11 @@ public class GenerateEuler2Java {
             writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
             writer.print(" " + safeFuncName + "(");
             var arg_vars = generateArgument(func.getArgsList(), writer);
-            var variables = new ArrayList<Variable>(arg_vars);
+            System.out.println("func.getArgsCount() = " + func.getArgsCount());  //TODO @mark: TEMPORARY! REMOVE THIS!
+            for (int i = 0; i < arg_vars.size(); i++) {
+                System.out.println("arg " + i + ": " + arg_vars.get(i));  //TODO @mark: TEMPORARY! REMOVE THIS!
+            }
+            var variables = new ArrayList<>(arg_vars);
             writer.println(") {");
             for (var local : func.getLocalsList()) {
                 var javaType = builtinType(local.getTyp().getBuiltin());
@@ -100,6 +104,9 @@ public class GenerateEuler2Java {
                 variables.add(new Variable(javaType, javaName));
                 writer.println("\t\t" + javaType +
                         " " + javaName + ";");
+            }
+            for (int i = 0; i < variables.size(); i++) {
+                System.out.println(i + ": " + variables.get(i));  //TODO @mark: TEMPORARY! REMOVE THIS!
             }
             compileStatements(writer, func.getCodeList(), variables);
             writer.println("\t}\n");
@@ -176,6 +183,7 @@ public class GenerateEuler2Java {
             }
             var javaType = builtinType(field.getTyp().getBuiltin());
             var javaName = safeName(field.getName(), false);
+            variables.add(new Variable(javaType, javaName));
             writer.print("\t\t" + javaType + " " + javaName);
         }
         writer.print("\n\t");

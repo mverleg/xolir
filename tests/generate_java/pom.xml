@@ -5,7 +5,7 @@
 
     <groupId>com.apivolve</groupId>
     <artifactId>telir_generate_java</artifactId>
-    <version>0.1.0</version>
+    <version>test-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -21,9 +21,10 @@
     </prerequisites>
     <dependencies>
         <dependency>
-            <!-- need to install target/generate_java -->
+            <!-- need to install target/java with correct version-->
             <groupId>com.apivolve</groupId>
             <artifactId>telir</artifactId>
+            <version>test-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

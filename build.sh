@@ -4,6 +4,8 @@ if [ $# != 0 ] || [ "${1:-}" == "-h" ]; then
     panic-in "$0" 'invokes ptoroc for codegen and does some bookkeeping; expects no arguments'
 fi
 
+VERSION=0.1.0
+
 PYTHON_BASE=./target/python
 PYTHON_SRC="$PYTHON_BASE/telir"
 JAVA_BASE=./target/java
@@ -37,7 +39,7 @@ target="$(pwd)/target"
 (
     cd "$JAVA_BASE"
     echo 'compiling java'
-    mvn package -q -Pfat-jar
+    mvn package -q -Pfat-jar -Drevision=$VERSION
     cp target/*.jar "$target/"
 )
 (

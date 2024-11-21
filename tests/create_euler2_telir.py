@@ -35,7 +35,14 @@ def even_fib_sub(max):
 ''',
     )],
     structs=[
-        Struct(),
+        Struct(
+            id=0,
+            name="Point",
+            fields=[
+                TypedName(name="x", typ=TypeRef(builtin=BuiltinType.REAL_64)),
+                TypedName(name="y", typ=TypeRef(builtin=BuiltinType.REAL_64)),
+            ],
+        ),
     ],
     functions=[
         Function(
@@ -89,6 +96,8 @@ def even_fib_sub(max):
 )
 
 print(prog)
-with open(f'{prog.program_name}.telir', 'wb+') as f:
+
+assert len(sys.argv) >= 2, "first arg must be output path"
+with open(sys.argv[1], 'wb+') as f:
     f.write(prog.SerializeToString())
 

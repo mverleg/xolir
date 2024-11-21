@@ -4,9 +4,10 @@
 
 echo 'generating sample telir'
 base="$(realpath "${BASH_SOURCE%/*}")"
+telir_pth="$base/euler2.telir"
 
 # must have `pip install protobuf`
-python3 "$base/create_euler2_telir.py"
+python3 "$base/create_euler2_telir.py" "$telir_pth"
 
 if [ -z ${SKIP_INSTALL+x} ] ; then
   (
@@ -20,7 +21,7 @@ fi
 (
   echo 'compiling sample telir to java'
   cd "$base/generate_java"
-  mvn compile exec:java -q -Dexec.args="$base/euler2.telir"
+  MAVEN_OPTS="-ea" mvn compile exec:java -e -q -Dexec.args="$telir_pth"
 )
 
 echo done

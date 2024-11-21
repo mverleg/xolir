@@ -7,5 +7,5 @@ import "telir/type.proto";
 message Struct {
   uint32 id = 1;  // equal to 0-based array index, redundant?
   string name = 2;
-  repeated TypedName field = 3;
+  repeated TypedName fields = 3;
 }

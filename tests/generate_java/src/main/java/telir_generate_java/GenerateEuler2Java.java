@@ -1,5 +1,7 @@
 package telir_generate_java;
 
+import telir.BuiltinTypeOuterClass;
+
 import static telir.Tel.TelProgram;
 
 import java.io.IOException;
@@ -52,10 +54,34 @@ public class GenerateEuler2Java {
                 source.getSource().lines().forEach(line -> writer.println("//   " + line));
             }
             writer.println("\n@javax.annotation.processing.Generated  // do not edit");
-            writer.println("public class " + tel.getProgramName() + " {");
+            writer.println("public class " + safeName(tel.getProgramName()) + " {");
+            for (var cls : tel.getStructsList()) {
+                writer.println("\tprivate record " + safeName(cls.getName()) + " {");
+                for (var field : cls.getFieldsList()) {
+                    writer.println("\t\tprivate final " + builtinType(field.getTyp().getBuiltin()) +
+                            " " + safeName(field.getName()) + ";");
+                }
+                writer.println("\t}\n");
+            }
+            //TODO @mark: functions
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    private static String builtinType(BuiltinTypeOuterClass.BuiltinType bultinType) {
+        return switch (bultinType) {
+            case S_INT_32 -> "int";
+            case S_INT_64 -> "long";
+            case REAL_64 -> "double";
+            case BOOL -> "boolean";
+            case UNRECOGNIZED -> throw new AssertionError("unrecognized type");
+        };
+    }
+
+    private static String safeName(String rawName) {
+        assert !rawName.isBlank();
+        return rawName;
     }
 }

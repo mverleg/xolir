@@ -38,7 +38,6 @@ target="$(pwd)/target"
     cd "$JAVA_BASE"
     echo 'compiling java'
     mvn package -q -Pfat-jar
-    echo PWD=$JAVA_BASE cp target/*.jar "$target/"
     cp target/*.jar "$target/"
 )
 (

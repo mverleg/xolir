@@ -4,9 +4,16 @@
 
 echo 'generating sample telir'
 
-python3 create_euler2_telir.py
+# must have `pip install protobuf`
+python3 "${BASH_SOURCE%/*}/create_euler2_telir.py"
 
-echo 'compiling sample telir to java'
-
-mvn package -q;  #TODO @mark: exec
-
+(
+  echo 'installing java telir'
+  cd "${BASH_SOURCE%/*}/../target/java"
+  mvn install -q -Pfat-jar
+)
+(
+  echo 'compiling sample telir to java'
+  cd "${BASH_SOURCE%/*}/generate_java"
+  mvn exec:exec
+)

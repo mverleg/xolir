@@ -3,6 +3,8 @@ package telir_generate_java;
 import static telir.Tel.TelProgram;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +27,7 @@ public class GenerateEuler2Java {
     }
 
     private static Path buildOutputPath(Path inputPath, TelProgram tel) {
-        var dirPath = Path.of(inputPath.getParent().toString(), "generated", "src", "main", "java", tel.getProgramName() + ".java");
+        var dirPath = Path.of(inputPath.getParent().toString(), "generated", "src", "main", "java");
         try {
             Files.createDirectories(dirPath);
         } catch (IOException exception) {
@@ -35,17 +37,25 @@ public class GenerateEuler2Java {
     }
 
     private static TelProgram readTel(Path inputPath) {
-        TelProgram tel;
         try {
-            byte[] proto = Files.readAllBytes(inputPath);
-            tel = TelProgram.parseFrom(proto);
+            var proto = Files.readAllBytes(inputPath);
+            return TelProgram.parseFrom(proto);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        return tel;
     }
 
     private static void compileToJava(TelProgram tel, Path outputPath) {
-
+        try (PrintWriter writer = new PrintWriter(outputPath.toFile(), StandardCharsets.UTF_8)) {
+            for (var source : tel.getSourcesList()) {
+                writer.println("\n// ** Tel source: " + source.getName() + " **");
+                source.getSource().lines().forEach(line -> writer.println("//   " + line));
+            }
+            writer.println("\n@javax.annotation.processing.Generated  // do not edit");
+            writer.println("public class " + tel.getProgramName() + " {");
+            writer.println("}");
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }

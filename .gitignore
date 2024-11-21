@@ -3,3 +3,4 @@ target/
 .git-blame-ignore-revs
 .run/
 tests/*.telir
+tests/generated/

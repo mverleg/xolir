@@ -31,7 +31,7 @@ message Store {
 message Call {
   oneof target {
     BuiltinFunc builtin = 10;
-    uint32 func_id = 11;
+    uint32 func_ix = 11;
   }
   repeated Expression arguments = 1;
 }

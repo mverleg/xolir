@@ -1,5 +1,6 @@
 package telir_generate_java;
 
+import telir.BuiltinFunction;
 import telir.ExpressionOuterClass;
 
 import java.io.IOException;
@@ -126,7 +127,16 @@ public class GenerateEuler2Java {
                 compileExpression(writer, expr.getStore().getValue(), variables, indent);
             }
             case CALL -> {
-                writer.print("/* TODO: CALL */");  //TODO @mark:
+                ExpressionOuterClass.Call call = expr.getCall();
+                switch (call.getTargetCase()) {
+                    case BUILTIN -> {
+                        compileBuiltinFunc(writer, call.getBuiltin(), call.getArgumentsList(), variables, indent);
+                    }
+                    case FUNC_IX -> {
+                        writer.print("/* FUNC_IX=" + call.getFuncIx() + " */");
+                    }
+                    case TARGET_NOT_SET -> throw new AssertionError("call target not recognized");
+                }
             }
             case IF_ -> {
                 writer.print("if (");
@@ -206,6 +216,33 @@ public class GenerateEuler2Java {
     }
 
     private record Variable(String type, String name) {}
+
+    private static void compileBuiltinFunc(PrintWriter writer, BuiltinFunction.BuiltinFunc builtin, List<Expression> argumentsList, List<Variable> variables, int indent) {
+        var myBinaryOp = switch (builtin) {
+            case ADD_U32 -> "+";
+            case SUB_U32 -> "-";
+            case MUL_U32 -> "*";
+            case DIV_U32 -> "/";
+            case LT_U32 -> "<";
+            case LTE_U32 -> "<=";
+            case EQ_U32 -> "==";
+            case ADD_S64 -> "+";
+            case SUB_S64 -> "-";
+            case MUL_S64 -> "*";
+            case DIV_S64 -> "/";
+            case MOD_S64 -> "%";
+            case LT_S64 -> "<";
+            case LTE_S64 -> "<=";
+            case EQ_S64 -> "==";
+            case UNRECOGNIZED -> throw new AssertionError("unrecognized builtin function");
+        };
+        assert argumentsList.size() == 2: "binary operation " + builtin + " must have exactly 2 args";
+        writer.print("(");
+        compileExpression(writer, argumentsList.get(0), variables, indent);
+        writer.print(" " + myBinaryOp + " ");
+        compileExpression(writer, argumentsList.get(1), variables, indent);
+        writer.print(")");
+    }
 
     private static String safeName(String rawName, boolean isType) {
         //TODO @mark: it's possible that the_thing and TheThing and up colliding

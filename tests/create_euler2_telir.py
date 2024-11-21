@@ -50,6 +50,9 @@ def even_fib_sub(max):
             name="main",
             args=[],
             results=[TypeRef()],
+            code=[
+                Expression(call=Call(func_ix=1, arguments=[Expression(int=4_000_000)])),
+            ],
         ),
         Function(
             id=0,

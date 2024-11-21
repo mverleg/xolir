@@ -17,7 +17,6 @@ public class GenerateEuler2Java {
         var tel = readTel(inputPath);
         var outputPath = buildOutputPath(inputPath, tel);
         compileToJava(tel, outputPath);
-        System.out.println(tel);
     }
 
     private static Path getInputPath(String[] args) {
@@ -35,7 +34,7 @@ public class GenerateEuler2Java {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        return Path.of(dirPath.toString(), tel.getProgramName() + ".java");
+        return Path.of(dirPath.toString(), safeName(tel.getProgramName(), true) + ".java");
     }
 
     private static TelProgram readTel(Path inputPath) {
@@ -53,15 +52,15 @@ public class GenerateEuler2Java {
                 writer.println("\n// ** Tel source: " + source.getName() + " **");
                 source.getSource().lines().forEach(line -> writer.println("//   " + line));
             }
-            writer.println("\n@javax.annotation.processing.Generated  // do not edit");
-            writer.println("public class " + safeName(tel.getProgramName()) + " {");
+            writer.println("\n@javax.annotation.processing.Generated(\"telir\")  // do not edit");
+            writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
             for (var cls : tel.getStructsList()) {
-                writer.println("\tprivate record " + safeName(cls.getName()) + " {");
+                writer.println("\tprivate record " + safeName(cls.getName(), true) + "(");
                 for (var field : cls.getFieldsList()) {
-                    writer.println("\t\tprivate final " + builtinType(field.getTyp().getBuiltin()) +
-                            " " + safeName(field.getName()) + ";");
+                    writer.println("\t\t" + builtinType(field.getTyp().getBuiltin()) +
+                            " " + safeName(field.getName(), false) + ",");
                 }
-                writer.println("\t}\n");
+                writer.println("\t) {}\n");
             }
             //TODO @mark: functions
             writer.println("}");
@@ -80,8 +79,13 @@ public class GenerateEuler2Java {
         };
     }
 
-    private static String safeName(String rawName) {
+    private static String safeName(String rawName, boolean isType) {
         assert !rawName.isBlank();
-        return rawName;
+        var noWhitespace = rawName.replaceAll("\\s", "_");
+        if (isType) {
+            return noWhitespace.substring(0, 1).toUpperCase() + noWhitespace.substring(1);
+        } else {
+            return noWhitespace.substring(0, 1).toLowerCase() + noWhitespace.substring(1);
+        }
     }
 }

@@ -101,48 +101,61 @@ public class GenerateEuler2Java {
                 writer.println("\t\t" + javaType +
                         " " + javaName + ";");
             }
-            for (var expr : func.getCodeList()) {
-                writer.print("\t\t");
-                compileExpression(writer, expr, variables);
-                writer.println(";");
-            }
+            compileStatements(writer, func.getCodeList(), variables);
             writer.println("\t}\n");
+        }
+    }
+
+    private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Variable> variables) {
+        for (var stmt : stmts) {
+            writer.print("\t\t");
+            compileExpression(writer, stmt, variables);
+            writer.println(";");
         }
     }
 
     private static void compileExpression(PrintWriter writer, Expression expr, List<Variable> variables) {
         switch (expr.getExprCase()) {
             case READ -> {
-                writer.write(variables.get(expr.getRead().getVarIx()).name());
+                writer.print(variables.get(expr.getRead().getVarIx()).name());
             }
             case STORE -> {
-                writer.write(variables.get(expr.getStore().getVarIx()).name() + " = ");
+                writer.print(variables.get(expr.getStore().getVarIx()).name() + " = ");
                 compileExpression(writer, expr.getStore().getValue(), variables);
             }
             case CALL -> {
-                writer.write("/* TODO: CALL */");  //TODO @mark:
+                writer.print("/* TODO: CALL */");  //TODO @mark:
             }
             case IF_ -> {
-                writer.write("/* TODO: IF_ */");  //TODO @mark:
+                writer.print("if (");
+                compileExpression(writer, expr.getIf().getCondition(), variables);
+                writer.println("\t\t) {");
+                compileStatements(writer, expr.getIf().getCodeList(), variables);
+                writer.println("\t\t}");
+                //TODO @mark: else
             }
             case WHILE_ -> {
-                writer.write("/* TODO: WHILE_ */");  //TODO @mark:
+                writer.print("while (");
+                compileExpression(writer, expr.getWhile().getCondition(), variables);
+                writer.println("\t\t) {");
+                compileStatements(writer, expr.getWhile().getCodeList(), variables);
+                writer.println("\t\t}");
             }
             case RETURN_ -> {
-                writer.write("/* TODO: RETURN_ */");  //TODO @mark:
+                writer.print("/* TODO: RETURN_ */");  //TODO @mark:
             }
             case INT -> {
-                writer.write(String.valueOf(expr.getInt()));
+                writer.print(String.valueOf(expr.getInt()));
             }
             case REAL -> {
-                writer.write(String.valueOf(expr.getReal()));
+                writer.print(String.valueOf(expr.getReal()));
             }
             case TEXT -> {
                 assert !expr.getText().contains("\""): "strings with double-quotes not supported yet";
-                writer.write(expr.getText());
+                writer.print(expr.getText());
             }
             case BOOL -> {
-                writer.write(expr.getBool() ? "true" : "false");
+                writer.print(expr.getBool() ? "true" : "false");
             }
             case EXPR_NOT_SET -> throw new AssertionError("expression type not recognized");
         }

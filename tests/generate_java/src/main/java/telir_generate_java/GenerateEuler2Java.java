@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class GenerateEuler2Java {
     public static void main(String[] args) {
@@ -56,13 +57,26 @@ public class GenerateEuler2Java {
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
             for (var cls : tel.getStructsList()) {
                 writer.println("\tprivate record " + safeName(cls.getName(), true) + "(");
+                boolean first = true;
                 for (var field : cls.getFieldsList()) {
-                    writer.println("\t\t" + builtinType(field.getTyp().getBuiltin()) +
-                            " " + safeName(field.getName(), false) + ",");
+                    if (first) {
+                        first = false;
+                    } else {
+                        writer.print(",\n");
+                    }
+                    writer.print("\t\t" + builtinType(field.getTyp().getBuiltin()) + " " + safeName(field.getName(), false));
                 }
-                writer.println("\t) {}\n");
+                writer.println("\n\t) {}\n");
             }
-            //TODO @mark: functions
+            for (var func : tel.getFunctionsList()) {
+                writer.println("\tprivate static void " + safeName(func.getName(), false) + "() {");
+                writer.println("\t}\n");
+//                for (var field : cls.getFieldsList()) {
+//                    writer.println("\t\t" + builtinType(field.getTyp().getBuiltin()) +
+//                            " " + safeName(field.getName(), false) + ",");
+//                }
+//                writer.println("\t) {}\n");
+            }
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
@@ -80,12 +94,27 @@ public class GenerateEuler2Java {
     }
 
     private static String safeName(String rawName, boolean isType) {
-        assert !rawName.isBlank();
-        var noWhitespace = rawName.replaceAll("\\s", "_");
-        if (isType) {
-            return noWhitespace.substring(0, 1).toUpperCase() + noWhitespace.substring(1);
-        } else {
-            return noWhitespace.substring(0, 1).toLowerCase() + noWhitespace.substring(1);
+        int i = 0;
+        while (i < rawName.length() && !Character.isLetter(rawName.charAt(i))) {
+            i++;
         }
+        var cleanName = new StringBuilder();
+        if (isType) {
+            cleanName.append(Character.toUpperCase(rawName.charAt(i)));
+        } else {
+            cleanName.append(Character.toLowerCase(rawName.charAt(i)));
+        }
+        boolean capitalizeNext = false;
+        for (i++; i < rawName.length(); i++) {
+            var c = rawName.charAt(i);
+            if (!Character.isLetter(c) && !Character.isDigit(c)) {
+                capitalizeNext = true;
+                continue;
+            }
+            cleanName.append(capitalizeNext ? Character.toUpperCase(c) : c);
+            capitalizeNext = false;
+        }
+        assert !cleanName.isEmpty();
+        return cleanName.toString();
     }
 }

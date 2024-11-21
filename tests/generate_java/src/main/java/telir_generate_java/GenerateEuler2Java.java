@@ -1,6 +1,7 @@
 package telir_generate_java;
 
 import telir.BuiltinTypeOuterClass;
+import telir.Type;
 
 import static telir.Tel.TelProgram;
 
@@ -10,9 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class GenerateEuler2Java {
+    private static final Set<String> KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "void", "volatile", "while");
+
     public static void main(String[] args) {
         var inputPath = getInputPath(args);
         var tel = readTel(inputPath);
@@ -56,30 +60,52 @@ public class GenerateEuler2Java {
             writer.println("\n@javax.annotation.processing.Generated(\"telir\")  // do not edit");
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
             for (var cls : tel.getStructsList()) {
-                writer.println("\tprivate record " + safeName(cls.getName(), true) + "(");
-                boolean first = true;
-                for (var field : cls.getFieldsList()) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        writer.print(",\n");
-                    }
-                    writer.print("\t\t" + builtinType(field.getTyp().getBuiltin()) + " " + safeName(field.getName(), false));
+                String safeClsName = safeName(cls.getName(), true);
+                if (!safeClsName.equals(cls.getName())) {
+                    writer.println("\t// " + cls.getName());
                 }
-                writer.println("\n\t) {}\n");
+                writer.print("\tprivate record " + safeClsName + "(");
+                generateArgument(cls.getFieldsList(), writer);
+                writer.println(") {}\n");
             }
             for (var func : tel.getFunctionsList()) {
-                writer.println("\tprivate static void " + safeName(func.getName(), false) + "() {");
+                assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
+                String safeFuncName = safeName(func.getName(), false);
+                if (!safeFuncName.equals(func.getName())) {
+                    writer.println("\t// " + func.getName());
+                }
+                writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
+                writer.print(" " + safeFuncName + "(");
+                generateArgument(func.getArgsList(), writer);
+                writer.println(") {");
+                for (var local : func.getLocalsList()) {
+                    writer.println("\t\t" + builtinType(local.getTyp().getBuiltin()) +
+                            " " + safeName(local.getName(), false) + ";");
+                }
+                writer.println("\t\t// TODO: code");
                 writer.println("\t}\n");
-//                for (var field : cls.getFieldsList()) {
-//                    writer.println("\t\t" + builtinType(field.getTyp().getBuiltin()) +
-//                            " " + safeName(field.getName(), false) + ",");
-//                }
-//                writer.println("\t) {}\n");
             }
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
+        }
+    }
+
+    private static void generateArgument(List<Type.TypedName> argList, PrintWriter writer) {
+        if (!argList.isEmpty()) {
+            writer.print("\n");
+        }
+        boolean first = true;
+        for (var field : argList) {
+            if (first) {
+                first = false;
+            } else {
+                writer.print(",\n");
+            }
+            writer.print("\t\t" + builtinType(field.getTyp().getBuiltin()) + " " + safeName(field.getName(), false));
+        }
+        if (!argList.isEmpty()) {
+            writer.print("\n\t");
         }
     }
 
@@ -94,6 +120,7 @@ public class GenerateEuler2Java {
     }
 
     private static String safeName(String rawName, boolean isType) {
+        //TODO @mark: it's possible that the_thing and TheThing and up colliding
         int i = 0;
         while (i < rawName.length() && !Character.isLetter(rawName.charAt(i))) {
             i++;
@@ -114,7 +141,12 @@ public class GenerateEuler2Java {
             cleanName.append(capitalizeNext ? Character.toUpperCase(c) : c);
             capitalizeNext = false;
         }
-        assert !cleanName.isEmpty();
-        return cleanName.toString();
+        var cleaned = cleanName.toString();
+        if (KEYWORDS.contains(cleaned)) {
+            // there are no java keywords with underscores, so this is safe
+            cleaned += "_";
+        }
+        assert !cleaned.isEmpty();
+        return cleaned;
     }
 }

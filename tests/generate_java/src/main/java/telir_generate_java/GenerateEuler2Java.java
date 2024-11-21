@@ -1,5 +1,7 @@
 package telir_generate_java;
 
+import telir.ExpressionOuterClass;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -92,10 +94,6 @@ public class GenerateEuler2Java {
             writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
             writer.print(" " + safeFuncName + "(");
             var arg_vars = generateArgument(func.getArgsList(), writer);
-            System.out.println("func.getArgsCount() = " + func.getArgsCount());  //TODO @mark: TEMPORARY! REMOVE THIS!
-            for (int i = 0; i < arg_vars.size(); i++) {
-                System.out.println("arg " + i + ": " + arg_vars.get(i));  //TODO @mark: TEMPORARY! REMOVE THIS!
-            }
             var variables = new ArrayList<>(arg_vars);
             writer.println(") {");
             for (var local : func.getLocalsList()) {
@@ -105,57 +103,59 @@ public class GenerateEuler2Java {
                 writer.println("\t\t" + javaType +
                         " " + javaName + ";");
             }
-            for (int i = 0; i < variables.size(); i++) {
-                System.out.println(i + ": " + variables.get(i));  //TODO @mark: TEMPORARY! REMOVE THIS!
-            }
-            compileStatements(writer, func.getCodeList(), variables);
+            compileStatements(writer, func.getCodeList(), variables, 2);
             writer.println("\t}\n");
         }
     }
 
-    private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Variable> variables) {
+    private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Variable> variables, int indent) {
         for (var stmt : stmts) {
-            writer.print("\t\t");
-            compileExpression(writer, stmt, variables);
+            writeIndented(writer, indent, "");
+            compileExpression(writer, stmt, variables, indent);
             writer.println(";");
         }
     }
 
-    private static void compileExpression(PrintWriter writer, Expression expr, List<Variable> variables) {
+    private static void compileExpression(PrintWriter writer, Expression expr, List<Variable> variables, int indent) {
         switch (expr.getExprCase()) {
             case READ -> {
                 writer.print(variables.get(expr.getRead().getVarIx()).name());
             }
             case STORE -> {
                 writer.print(variables.get(expr.getStore().getVarIx()).name() + " = ");
-                compileExpression(writer, expr.getStore().getValue(), variables);
+                compileExpression(writer, expr.getStore().getValue(), variables, indent);
             }
             case CALL -> {
                 writer.print("/* TODO: CALL */");  //TODO @mark:
             }
             case IF_ -> {
                 writer.print("if (");
-                compileExpression(writer, expr.getIf().getCondition(), variables);
-                writer.println("\t\t) {");
-                compileStatements(writer, expr.getIf().getCodeList(), variables);
-                writer.println("\t\t}");
-                //TODO @mark: else
+                ExpressionOuterClass.If ifExpr = expr.getIf();
+                compileExpression(writer, ifExpr.getCondition(), variables, indent);
+                writeIndented(writer, indent, ") {\n");
+                compileStatements(writer, ifExpr.getCodeList(), variables, indent + 1);
+                if (ifExpr.getElseList() != null && !ifExpr.getElseList().isEmpty()) {
+                    writeIndented(writer, indent, "} else {\n");
+                    compileStatements(writer, ifExpr.getElseList(), variables, indent + 1);
+                }
+                writeIndented(writer, indent, "}");
             }
             case WHILE_ -> {
                 writer.print("while (");
-                compileExpression(writer, expr.getWhile().getCondition(), variables);
-                writer.println("\t\t) {");
-                compileStatements(writer, expr.getWhile().getCodeList(), variables);
-                writer.println("\t\t}");
+                compileExpression(writer, expr.getWhile().getCondition(), variables, indent);
+                writeIndented(writer, indent, ") {\n");
+                compileStatements(writer, expr.getWhile().getCodeList(), variables, indent + 1);
+                writeIndented(writer, indent, "}");
             }
             case RETURN_ -> {
-                writer.print("/* TODO: RETURN_ */");  //TODO @mark:
+                writer.print("return ");
+                compileExpression(writer, expr.getReturn().getValue(), variables, indent);
             }
             case INT -> {
-                writer.print(String.valueOf(expr.getInt()));
+                writer.print(expr.getInt());
             }
             case REAL -> {
-                writer.print(String.valueOf(expr.getReal()));
+                writer.print(expr.getReal());
             }
             case TEXT -> {
                 assert !expr.getText().contains("\""): "strings with double-quotes not supported yet";
@@ -168,7 +168,12 @@ public class GenerateEuler2Java {
         }
     }
 
-    private static ArrayList<Variable> generateArgument(List<TypedName> argList, PrintWriter writer) {
+    private static void writeIndented(PrintWriter writer, int indent, String text) {
+        writer.print("\t".repeat(indent));
+        writer.print(text);
+    }
+
+    private static List<Variable> generateArgument(List<TypedName> argList, PrintWriter writer) {
         var variables = new ArrayList<Variable>(argList.size());
         if (argList.isEmpty()) {
             return variables;

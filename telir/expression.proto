@@ -39,6 +39,7 @@ message Call {
 message If {
   Expression condition = 1;
   repeated Expression code = 2;
+  repeated Expression else = 3;
 }
 
 message While {
@@ -47,5 +48,5 @@ message While {
 }
 
 message Return {
-  uint32 var_ix = 1;
+  optional Expression value = 1;
 }

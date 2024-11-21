@@ -89,7 +89,7 @@ def even_fib_sub(max):
                             Expression(store=Store(var_ix=2, value=Expression(read=Read(var_ix=3)))),
                             Expression(store=Store(var_ix=3, value=Expression(read=Read(var_ix=4)))),
                         ])),
-                Expression(return_=Return(var_ix=1)),
+                Expression(return_=Return(value=Expression(read=Read(var_ix=1)))),
             ],
         ),
     ],

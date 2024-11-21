@@ -3,19 +3,20 @@
 # user must run ../build.sh first
 
 echo 'generating sample telir'
+base="$(realpath "${BASH_SOURCE%/*}")"
 
 # must have `pip install protobuf`
-python3 "${BASH_SOURCE%/*}/create_euler2_telir.py"
+python3 "$base/create_euler2_telir.py"
 
 (
   echo 'installing java telir'
-  cd "${BASH_SOURCE%/*}/../target/java"
-  mvn install -q -Pfat-jar -Drevision=test-SNAPSHOT
+  cd "$base/../target/java"
+  time mvn install --offline -q -T1C -Pfat-jar -Drevision=test-SNAPSHOT
 )
 (
   echo 'compiling sample telir to java'
-  cd "${BASH_SOURCE%/*}/generate_java"
-  mvn compile exec:java
+  cd "$base/generate_java"
+  mvn compile exec:java -q -Dexec.args="$base/euler2.telir"
 )
 
 echo done

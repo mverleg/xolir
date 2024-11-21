@@ -52,6 +52,7 @@ def even_fib_sub(max):
             results=[TypeRef()],
             code=[
                 Expression(call=Call(func_ix=1, arguments=[Expression(int=4_000_000)])),
+                Expression(return_=Return(value=Expression(int=0))),
             ],
         ),
         Function(
@@ -78,12 +79,14 @@ def even_fib_sub(max):
                         condition=Expression(call=Call(builtin=BuiltinFunc.LT_S64, arguments=[
                             Expression(read=Read(var_ix=3)), Expression(read=Read(var_ix=0))])),
                         code=[
-                            Expression(store=Store(var_ix=2,
+                            Expression(store=Store(var_ix=4,
                                 value=Expression(call=Call(builtin=BuiltinFunc.ADD_S64, arguments=[
                                     Expression(read=Read(var_ix=2)), Expression(read=Read(var_ix=3))])))),
                             Expression(if_=If(
-                                condition=Expression(call=Call(builtin=BuiltinFunc.MOD_S64, arguments=[
-                                    Expression(read=Read(var_ix=4)), Expression(int=2)])),
+                                condition=Expression(call=Call(builtin=BuiltinFunc.EQ_S64, arguments=[
+                                    Expression(call=Call(builtin=BuiltinFunc.MOD_S64, arguments=[
+                                        Expression(read=Read(var_ix=4)), Expression(int=2)])),
+                                    Expression(int=0)])),
                                 code=[
                                     Expression(store=Store(var_ix=1,
                                         value=Expression(call=Call(builtin=BuiltinFunc.ADD_S64, arguments=[

@@ -66,7 +66,8 @@ public class GenerateEuler2Java {
             writer.println("\n@javax.annotation.processing.Generated(\"telir\")  // do not edit");
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
             compileStructs(writer, tel.getStructsList());
-            compileFunctions(writer, tel.getFunctionsList());
+            var functions = tel.getFunctionsList().stream().map(f -> new Func(safeName(f.getName(), false))).toList();
+            compileFunctions(writer, tel.getFunctionsList(), functions);
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
@@ -85,7 +86,7 @@ public class GenerateEuler2Java {
         }
     }
 
-    private static void compileFunctions(PrintWriter writer, List<Function> functions) {
+    private static void compileFunctions(PrintWriter writer, List<Function> functions, List<Func> funcs) {
         for (var func : functions) {
             assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
             String safeFuncName = safeName(func.getName(), false);
@@ -101,39 +102,48 @@ public class GenerateEuler2Java {
                 var javaType = builtinType(local.getTyp().getBuiltin());
                 var javaName = safeName(local.getName(), false);
                 variables.add(new Variable(javaType, javaName));
-                writer.println("\t\t" + javaType +
-                        " " + javaName + ";");
+                writer.println("\t\t" + javaType + " " + javaName + ";");
             }
-            compileStatements(writer, func.getCodeList(), variables, 2);
+            compileStatements(writer, func.getCodeList(), funcs, variables, 2);
             writer.println("\t}\n");
         }
     }
 
-    private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Variable> variables, int indent) {
+    private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Func> funcs, List<Variable> variables, int indent) {
         for (var stmt : stmts) {
             writeIndented(writer, indent, "");
-            compileExpression(writer, stmt, variables, indent);
+            compileExpression(writer, stmt, funcs, variables, indent);
             writer.println(";");
         }
     }
 
-    private static void compileExpression(PrintWriter writer, Expression expr, List<Variable> variables, int indent) {
+    private static void compileExpression(PrintWriter writer, Expression expr, List<Func> funcs, List<Variable> variables, int indent) {
         switch (expr.getExprCase()) {
             case READ -> {
                 writer.print(variables.get(expr.getRead().getVarIx()).name());
             }
             case STORE -> {
                 writer.print(variables.get(expr.getStore().getVarIx()).name() + " = ");
-                compileExpression(writer, expr.getStore().getValue(), variables, indent);
+                compileExpression(writer, expr.getStore().getValue(), funcs, variables, indent);
             }
             case CALL -> {
                 ExpressionOuterClass.Call call = expr.getCall();
                 switch (call.getTargetCase()) {
                     case BUILTIN -> {
-                        compileBuiltinFunc(writer, call.getBuiltin(), call.getArgumentsList(), variables, indent);
+                        compileBuiltinFunc(writer, call.getBuiltin(), call.getArgumentsList(), funcs, variables, indent);
                     }
                     case FUNC_IX -> {
-                        writer.print("/* FUNC_IX=" + call.getFuncIx() + " */");
+                        writer.print(funcs.get(call.getFuncIx()).name() + "(");
+                        boolean first = true;
+                        for (var arg : call.getArgumentsList()) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                writer.print(", ");
+                            }
+                            compileExpression(writer, arg, funcs, variables, indent);
+                        }
+                        writer.print(")");
                     }
                     case TARGET_NOT_SET -> throw new AssertionError("call target not recognized");
                 }
@@ -141,25 +151,25 @@ public class GenerateEuler2Java {
             case IF_ -> {
                 writer.print("if (");
                 ExpressionOuterClass.If ifExpr = expr.getIf();
-                compileExpression(writer, ifExpr.getCondition(), variables, indent);
-                writeIndented(writer, indent, ") {\n");
-                compileStatements(writer, ifExpr.getCodeList(), variables, indent + 1);
+                compileExpression(writer, ifExpr.getCondition(), funcs, variables, indent);
+                writer.print(") {\n");
+                compileStatements(writer, ifExpr.getCodeList(), funcs, variables, indent + 1);
                 if (ifExpr.getElseList() != null && !ifExpr.getElseList().isEmpty()) {
                     writeIndented(writer, indent, "} else {\n");
-                    compileStatements(writer, ifExpr.getElseList(), variables, indent + 1);
+                    compileStatements(writer, ifExpr.getElseList(), funcs, variables, indent + 1);
                 }
                 writeIndented(writer, indent, "}");
             }
             case WHILE_ -> {
                 writer.print("while (");
-                compileExpression(writer, expr.getWhile().getCondition(), variables, indent);
-                writeIndented(writer, indent, ") {\n");
-                compileStatements(writer, expr.getWhile().getCodeList(), variables, indent + 1);
+                compileExpression(writer, expr.getWhile().getCondition(), funcs, variables, indent);
+                writer.print(") {\n");
+                compileStatements(writer, expr.getWhile().getCodeList(), funcs, variables, indent + 1);
                 writeIndented(writer, indent, "}");
             }
             case RETURN_ -> {
                 writer.print("return ");
-                compileExpression(writer, expr.getReturn().getValue(), variables, indent);
+                compileExpression(writer, expr.getReturn().getValue(), funcs, variables, indent);
             }
             case INT -> {
                 writer.print(expr.getInt());
@@ -215,9 +225,11 @@ public class GenerateEuler2Java {
         };
     }
 
+    private record Func(String name) {}
+
     private record Variable(String type, String name) {}
 
-    private static void compileBuiltinFunc(PrintWriter writer, BuiltinFunction.BuiltinFunc builtin, List<Expression> argumentsList, List<Variable> variables, int indent) {
+    private static void compileBuiltinFunc(PrintWriter writer, BuiltinFunction.BuiltinFunc builtin, List<Expression> argumentsList, List<Func> funcs, List<Variable> variables, int indent) {
         var myBinaryOp = switch (builtin) {
             case ADD_U32 -> "+";
             case SUB_U32 -> "-";
@@ -238,9 +250,9 @@ public class GenerateEuler2Java {
         };
         assert argumentsList.size() == 2: "binary operation " + builtin + " must have exactly 2 args";
         writer.print("(");
-        compileExpression(writer, argumentsList.get(0), variables, indent);
+        compileExpression(writer, argumentsList.get(0), funcs, variables, indent);
         writer.print(" " + myBinaryOp + " ");
-        compileExpression(writer, argumentsList.get(1), variables, indent);
+        compileExpression(writer, argumentsList.get(1), funcs, variables, indent);
         writer.print(")");
     }
 

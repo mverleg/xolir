@@ -3,7 +3,13 @@ syntax = "proto3";
 package telir;
 
 message SourceFile {
-  uint32 id = 1;  // equal to 0-based array index, redundant?
-  string name = 2;
-  string source = 3;
+  // id: index
+  string name = 1;
+  string source = 2;
+}
+
+message SourceLoc {
+  uint32 source_ix = 1;
+  uint32 start_loc = 2;
+  uint32 end_loc = 3;
 }

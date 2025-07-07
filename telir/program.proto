@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/debug.proto";
+
+message Program {
+  repeated SourceFile files = 1;
+  repeated TypeDef types = 2;
+  repeated Function funcs = 3;
+}

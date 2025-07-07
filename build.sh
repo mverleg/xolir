@@ -16,6 +16,18 @@ RUST_SRC="$RUST_BASE/src"
 
 mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
 
+bad_files=$(grep -EL '^syntax = "proto3";' telir/*.proto)
+if [ -n "$bad_files" ]; then
+    printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
+    exit 1
+fi
+
+bad_files=$(grep -EL '^package ' telir/*.proto)
+if [ -n "$bad_files" ]; then
+    printf "Files without package:\n%s\n" "$bad_files" 1>&2
+    exit 1
+fi
+
 echo 'compiling protoc'
 docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --python_out="$PYTHON_SRC/.." \
@@ -30,7 +42,7 @@ cp LICENSE.txt "$RUST_BASE/"
 
 cp -r static/* target
 
-target="$(pwd)/target"
+target="$(pwd)/target"q
 (
     echo 'packing python'
     cd "$PYTHON_BASE"

@@ -11,7 +11,7 @@ message TelProgram {
   uint32 ir_version = 2;
   uint32 telc_version = 3;
   repeated SourceFile sources = 4;
-  repeated Struct structs = 5;
+  repeated StructType structs = 5;
   repeated Function functions = 6;
 }
 

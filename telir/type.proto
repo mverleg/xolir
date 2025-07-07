@@ -6,13 +6,13 @@ import "telir/builtin_type.proto";
 import "telir/struct.proto";
 import "telir/array.proto";
 
-message TypeRef {
+message TypeDef {
   //TODO @mark: could be something like `T` or `List<int>`
   oneof target {
     BuiltinType builtin = 1;
     StructType struct = 2;
     ArrayType array = 3;
-
+    VirtualType virtual = 4;
   }
   //TODO @mark: oneof builtin, struct, generic...
 }
@@ -20,5 +20,5 @@ message TypeRef {
 message TypedName {
   //TODO @mark: could be something like `T` or `List<int>`
   string name = 1;
-  TypeRef typ = 2;
+  uint64 type_id = 2;
 }

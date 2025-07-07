@@ -5,6 +5,6 @@ package telir;
 import "telir/type.proto";
 
 message ArrayType {
-  optional sint64 size = 1;
-  TypeRef elemType = 2;
+  uint64 size = 1;
+  uint64 elem_type_id = 2;
 }

@@ -2,9 +2,9 @@
 syntax = "proto3";
 package telir;
 
-import "telir/type.proto";
+import "telir/refs.proto";
 
 message ArrayType {
   uint64 size = 1;
-  uint64 elem_type_id = 2;
+  TypeRef elem_type = 2;
 }

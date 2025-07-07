@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/refs.proto";
+
+message UnionType {
+  // if is_anonymous then name is auto-generated
+  string name = 1;
+  bool is_anonymous = 3;
+  repeated TypeRef option_types = 2;
+}

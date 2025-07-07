@@ -3,16 +3,19 @@ syntax = "proto3";
 package telir;
 
 import "telir/builtin_type.proto";
-import "telir/struct.proto";
-import "telir/array.proto";
+import "telir/type_array.proto";
+import "telir/type_struct.proto";
+import "telir/type_union.proto";
 
 message TypeDef {
   //TODO @mark: could be something like `T` or `List<int>`
   oneof target {
     // builtins don't need to be defined
-    StructType struct = 2;
+    StructType struct = 1;
+    UnionType union = 2;
     ArrayType array = 3;
-    VirtualType virtual = 4;
+    //TODO @mark:
+    // VirtualType virtual = 4;
   }
   //TODO @mark: oneof builtin, struct, generic...
 }

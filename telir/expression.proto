@@ -2,8 +2,7 @@
 syntax = "proto3";
 package telir;
 
-import "telir/builtin_function.proto";
-import "refs.proto";
+import "telir/refs.proto";
 
 message Expression {
   oneof expr {

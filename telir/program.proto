@@ -4,6 +4,7 @@ package telir;
 
 import "telir/debug.proto";
 import "telir/function.proto";
+import "telir/type.proto";
 
 message Program {
   string program_name = 10;

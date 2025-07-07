@@ -1,16 +1,16 @@
 
 syntax = "proto3";
 package telir;
+
 import "telir/builtin_type.proto";
 import "telir/struct.proto";
 import "telir/array.proto";
-
 
 message TypeRef {
   //TODO @mark: could be something like `T` or `List<int>`
   oneof target {
     BuiltinType builtin = 1;
-    Struct struct = 2;
+    StructType struct = 2;
     ArrayType array = 3;
 
   }

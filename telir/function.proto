@@ -2,17 +2,17 @@
 syntax = "proto3";
 package telir;
 
-import "telir/type.proto";
 import "telir/expression.proto";
-//import "telir/expression.proto";
+import "telir/refs.proto";
 
-// local variable indexing uses args and then locals, e.g. args=[a,b] locals=[c,d,e]
-// then b has index 1 and d has 3
+message FunctionType {
+  repeated TypedName args = 1;
+  repeated TypeRef results = 2;
+}
+
 message Function {
-  uint32 id = 1;  // equal to 0-based array index, redundant?
   string name = 2;
-  repeated TypedName args = 3;
-  repeated TypeRef results = 4;
-  repeated TypedName locals = 5;
-  repeated Expression code = 6;
+  FunctionType typ = 1;
+  repeated TypedName locals = 3;
+  repeated Expression code = 4;
 }

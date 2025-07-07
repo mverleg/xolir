@@ -42,7 +42,7 @@ cp LICENSE.txt "$RUST_BASE/"
 
 cp -r static/* target
 
-target="$(pwd)/target"q
+target="$(pwd)/target"
 (
     echo 'packing python'
     cd "$PYTHON_BASE"

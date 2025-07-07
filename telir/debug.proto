@@ -3,7 +3,6 @@ syntax = "proto3";
 package telir;
 
 message SourceFile {
-  // id: index
   string name = 1;
   string source = 2;
 }

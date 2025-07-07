@@ -1,0 +1,34 @@
+
+syntax = "proto3";
+package telir;
+
+import "telir/debug.proto";
+import "telir/function.proto";
+import "builtin_function.proto";
+import "builtin_type.proto";
+import "struct.proto";
+import "array.proto";
+
+message FuncRef {
+  oneof target {
+    BuiltinFunc builtin = 10;
+    uint64 func_ix = 11;
+  }
+}
+
+message TypeRef {
+  //TODO @mark: could be something like `T` or `List<int>`
+  oneof target {
+    BuiltinType builtin = 1;
+    uint64 struct_id = 2;
+    uint64 array_id = 3;
+    uint64 virtual_id = 4;
+  }
+  //TODO @mark: oneof builtin, struct, generic...
+}
+
+message TypedName {
+  //TODO @mark: could be something like `T` or `List<int>`
+  string name = 1;
+  uint64 type_id = 2;
+}

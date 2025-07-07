@@ -3,6 +3,7 @@ syntax = "proto3";
 package telir;
 
 import "telir/builtin_function.proto";
+import "refs.proto";
 
 message Expression {
   oneof expr {
@@ -29,10 +30,7 @@ message Store {
 }
 
 message Call {
-  oneof target {
-    BuiltinFunc builtin = 10;
-    uint32 func_ix = 11;
-  }
+  FuncRef func = 2;
   repeated Expression arguments = 1;
 }
 

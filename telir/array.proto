@@ -1,0 +1,8 @@
+package telir;
+
+import "telir/type.proto";
+
+message ArrayType {
+    optional sint64 size = 1;
+    TypeRef elemType = 2;
+}

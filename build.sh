@@ -47,4 +47,5 @@ target="$(pwd)/target"
     zip -rq "$target/telir-rust.zip" .
 )
 
+echo done
 

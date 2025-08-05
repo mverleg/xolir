@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.apivolve</groupId>
-    <artifactId>telir_generate_java</artifactId>
+    <artifactId>xolir_generate_java</artifactId>
     <version>test-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Test telir codegen</description>
-    <url>https://github.com/mverleg/telir</url>
+    <description>Test xolir codegen</description>
+    <url>https://github.com/mverleg/xolir</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
         <dependency>
             <!-- need to install target/java with correct version-->
             <groupId>com.apivolve</groupId>
-            <artifactId>telir</artifactId>
+            <artifactId>xolir</artifactId>
             <version>test-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -44,7 +44,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>telir_generate_java.GenerateEuler2Java</mainClass>
+                    <mainClass>xolir_generate_java.GenerateEuler2Java</mainClass>
                 </configuration>
             </plugin>
         </plugins>

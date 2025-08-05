@@ -1,11 +1,11 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
-import "telir/type_array.proto";
-import "telir/type_struct.proto";
-import "telir/type_union.proto";
-import "telir/function.proto";
+import "xolir/type_array.proto";
+import "xolir/type_struct.proto";
+import "xolir/type_union.proto";
+import "xolir/function.proto";
 
 message TypeDef {
   //TODO @mark: could be something like `T` or `List<int>`

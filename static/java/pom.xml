@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.apivolve</groupId>
-    <artifactId>telir</artifactId>
+    <artifactId>xolir</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java protobuf classes for Tel IR api</description>
-    <url>https://github.com/mverleg/telir</url>
+    <url>https://github.com/mverleg/xolir</url>
     <developers>
         <developer>
             <name>Mark Verleg</name>
@@ -92,7 +92,7 @@
                                     <relocations>
                                         <relocation>
                                             <pattern>com.google.</pattern>
-                                            <shadedPattern>shaded.telir.com.google.</shadedPattern>
+                                            <shadedPattern>shaded.xolir.com.google.</shadedPattern>
                                         </relocation>
                                     </relocations>
                                 </configuration>

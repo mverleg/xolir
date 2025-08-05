@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
 enum BuiltinFunc {
   ADD_U32 = 0;

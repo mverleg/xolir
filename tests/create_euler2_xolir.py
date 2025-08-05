@@ -1,18 +1,18 @@
 from os import path
 import sys
 
-gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/telir-python.zip'))
+gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/xolir-python.zip'))
 assert path.exists(gen_pth), f"run codegen to generate {gen_pth}"
 sys.path.insert(0, gen_pth)
 
-from telir.builtin_type_pb2 import BuiltinType
-from telir.builtin_function_pb2 import BuiltinFunc
-from telir.type_pb2 import TypeRef, TypedName
-from telir.struct_pb2 import Struct
-from telir.function_pb2 import Function
-from telir.expression_pb2 import Expression, Read, Store, Call, If, While, Return
-from telir.debug_pb2 import SourceFile
-from telir.tel_pb2 import TelProgram
+from xolir.builtin_type_pb2 import BuiltinType
+from xolir.builtin_function_pb2 import BuiltinFunc
+from xolir.type_pb2 import TypeRef, TypedName
+from xolir.struct_pb2 import Struct
+from xolir.function_pb2 import Function
+from xolir.expression_pb2 import Expression, Read, Store, Call, If, While, Return
+from xolir.debug_pb2 import SourceFile
+from xolir.tel_pb2 import TelProgram
 
 prog = TelProgram(
     program_name='euler2',

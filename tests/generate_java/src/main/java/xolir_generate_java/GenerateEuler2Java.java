@@ -1,7 +1,7 @@
-package telir_generate_java;
+package xolir_generate_java;
 
-import telir.BuiltinFunction;
-import telir.ExpressionOuterClass;
+import xolir.BuiltinFunction;
+import xolir.ExpressionOuterClass;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static telir.BuiltinTypeOuterClass.BuiltinType;
-import static telir.ExpressionOuterClass.Expression;
-import static telir.FunctionOuterClass.Function;
-import static telir.StructOuterClass.Struct;
-import static telir.Tel.TelProgram;
-import static telir.Type.TypedName;
+import static xolir.BuiltinTypeOuterClass.BuiltinType;
+import static xolir.ExpressionOuterClass.Expression;
+import static xolir.FunctionOuterClass.Function;
+import static xolir.StructOuterClass.Struct;
+import static xolir.Tel.TelProgram;
+import static xolir.Type.TypedName;
 
 public class GenerateEuler2Java {
     private static final Set<String> KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "void", "volatile", "while");
@@ -32,7 +32,7 @@ public class GenerateEuler2Java {
 
     private static Path getInputPath(String[] args) {
         if (args.length != 1) {
-            System.err.println("First argument should be the path to Telir binary proto file");
+            System.err.println("First argument should be the path to xolir binary proto file");
             System.exit(1);
         }
         return FileSystems.getDefault().getPath(args[0]);
@@ -63,7 +63,7 @@ public class GenerateEuler2Java {
                 writer.println("\n// ** Tel source: " + source.getName() + " **");
                 source.getSource().lines().forEach(line -> writer.println("//   " + line));
             }
-            writer.println("\n@javax.annotation.processing.Generated(\"telir\")  // do not edit");
+            writer.println("\n@javax.annotation.processing.Generated(\"xolir\")  // do not edit");
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
             compileStructs(writer, tel.getStructsList());
             var functions = tel.getFunctionsList().stream().map(f -> new Func(safeName(f.getName(), false))).toList();

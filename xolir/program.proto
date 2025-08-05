@@ -1,10 +1,10 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
-import "telir/debug.proto";
-import "telir/function.proto";
-import "telir/type.proto";
+import "xolir/debug.proto";
+import "xolir/function.proto";
+import "xolir/type.proto";
 
 message Program {
   string program_name = 10;

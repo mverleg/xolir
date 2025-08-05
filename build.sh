@@ -7,22 +7,22 @@ fi
 VERSION=0.1.0
 
 PYTHON_BASE=./target/python
-PYTHON_SRC="$PYTHON_BASE/telir"
+PYTHON_SRC="$PYTHON_BASE/xolir"
 JAVA_BASE=./target/java
-JAVA_SRC="$JAVA_BASE/src/main/java/telir"
+JAVA_SRC="$JAVA_BASE/src/main/java/xolir"
 JAVA_RESOURCE="$JAVA_BASE/src/main/resources"
 RUST_BASE=./target/rust
 RUST_SRC="$RUST_BASE/src"
 
 mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
 
-bad_files=$(grep -EL '^syntax = "proto3";' telir/*.proto)
+bad_files=$(grep -EL '^syntax = "proto3";' xolir/*.proto)
 if [ -n "$bad_files" ]; then
     printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
     exit 1
 fi
 
-bad_files=$(grep -EL '^package ' telir/*.proto)
+bad_files=$(grep -EL '^package ' xolir/*.proto)
 if [ -n "$bad_files" ]; then
     printf "Files without package:\n%s\n" "$bad_files" 1>&2
     exit 1
@@ -33,7 +33,7 @@ docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --python_out="$PYTHON_SRC/.." \
     --java_out="$JAVA_SRC" \
     --rust_out=experimental-codegen=enabled,kernel=cpp:"$RUST_SRC" \
-    telir/*.proto
+    xolir/*.proto
 
 cp LICENSE.txt "$PYTHON_BASE/"
 cp LICENSE.txt "$JAVA_BASE/"
@@ -46,7 +46,7 @@ target="$(pwd)/target"
 (
     echo 'packing python'
     cd "$PYTHON_BASE"
-    zip -rq "$target/telir-python.zip" .
+    zip -rq "$target/xolir-python.zip" .
 )
 (
     cd "$JAVA_BASE"
@@ -56,7 +56,7 @@ target="$(pwd)/target"
 )
 (
     cd "$RUST_BASE"
-    zip -rq "$target/telir-rust.zip" .
+    zip -rq "$target/xolir-rust.zip" .
 )
 
 echo done

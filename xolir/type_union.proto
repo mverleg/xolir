@@ -1,8 +1,8 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
-import "telir/refs.proto";
+import "xolir/refs.proto";
 
 message UnionType {
   // if is_anonymous then name is auto-generated

@@ -1,9 +1,9 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
-import "telir/builtin_function.proto";
-import "telir/builtin_type.proto";
+import "xolir/builtin_function.proto";
+import "xolir/builtin_type.proto";
 
 message FuncRef {
   oneof target {

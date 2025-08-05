@@ -1,9 +1,9 @@
 
 syntax = "proto3";
-package telir;
+package xolir;
 
-import "telir/expression.proto";
-import "telir/refs.proto";
+import "xolir/expression.proto";
+import "xolir/refs.proto";
 
 message FunctionType {
   repeated TypedName args = 1;

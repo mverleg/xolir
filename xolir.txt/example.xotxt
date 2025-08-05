@@ -1,42 +1,61 @@
 
 {Program
-    program_name = "test"
-    ir_version = 1
-    telc_version = 1
+    program_name = "test",
+    ir_version = 1,
+    telc_version = 1,
     types = [
-        struct = {StructType
-        }
+        target = #struct({StructType
+            name = "Point",
+            is_anonymous = false,
+            fields = [
+                {TypedName
+                    name = "x",
+                    type_id = {TypeRef
+                        target = #builtin({BuiltinType
+                            %REAL_64
+                        }),
+                    },
+                },
+                {TypedName
+                    name = "y",
+                    type_id = {TypeRef
+                        target = #builtin({BuiltinType
+                            %REAL_64,
+                        }),
+                    },
+                },
+            ],
+        })
     ]
-    funcs = []
+    funcs = [
+        {Function
+            name = "scale",
+            typ = {FunctionType
+                args = [
+                    {TypedName
+                        name = "pt",
+                        type_id = {TypeRef
+                                target = #type_id(1),
+                            }),
+                        }
+                    }
+                    {TypedName
+                        name = "mul",
+                        type_id = {TypeRef
+                            target = #builtin({BuiltinType
+                                %REAL_64,
+                            }),
+                        }
+                    }
+                ],
+                results = [
+                    {TypeRef
+                        target = #type_id(1),
+                    }
+                ],
+            },
+            locals = [],
+            code = [],
+        },
+    ]
 }
-
-message TypeDef {
-  //TODO @mark: could be something like `T` or `List<int>`
-  oneof target {
-    // builtins don't need to be defined
-    StructType struct = 1;
-    UnionType union = 2;
-    ArrayType array = 3;
-    //TODO @mark:
-    // VirtualType virtual = 4;
-    FunctionType func = 5;
-  }
-  //TODO @mark: oneof builtin, struct, generic...
-}
-
-syntax = "proto3";
-package xolir;
-
-import "xolir/debug.proto";
-import "xolir/function.proto";
-import "xolir/type.proto";
-
-message Program {
-  string program_name = 10;
-  uint32 ir_version = 11;
-  uint32 telc_version = 12;
-  repeated SourceFile files = 1;
-  repeated TypeDef types = 2;
-  repeated Function funcs = 3;
-}
-

@@ -19,9 +19,14 @@ bash build.sh &&\
 sudo chown $USER:$USER -R target/
 ```
 
+## Tests
+
+There is a test that generates some Xolir data with python, and generates Java code.
+
+See `tests/test.sh` to run this.
+
 ## Implementation
 
 Note that the language you generate the code for doesn't have to be the same language that the code generator is implemented in.
 
-While not as descriptive as e.g. json-schema, it has better support for generating fast code in a range of langauges.
-
+This uses protobuf. While this is not as descriptive as e.g. json-schema, this has better support for generating fast code in a range of languages.

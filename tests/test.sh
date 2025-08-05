@@ -6,8 +6,10 @@ echo 'generating sample telir'
 base="$(realpath "${BASH_SOURCE%/*}")"
 telir_pth="$base/euler2.telir"
 
-# must have `pip install protobuf`
-python3 "$base/create_euler2_telir.py" "$telir_pth"
+# Must have:
+# pip install protobuf
+# pip install -e "$(git rev-parse --show-toplevel)/target/python"
+python3 "$base/create_euler2_telir.py"
 
 if [ -z ${SKIP_INSTALL+x} ] ; then
   (

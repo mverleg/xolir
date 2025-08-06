@@ -1,0 +1,13 @@
+[package]
+name = "xolir"
+version = "0.1.0"
+edition = "2024"
+
+build = "build.rs"
+
+[dependencies]
+prost = "0.13.1"
+tonic = "0.13.1"
+
+[build-dependencies]
+tonic-build = "0.13.1"

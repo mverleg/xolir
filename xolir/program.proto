@@ -8,8 +8,8 @@ import "xolir/type.proto";
 
 message Program {
   string program_name = 10;
-  uint32 ir_version = 11;
-  uint32 telc_version = 12;
+//  uint32 ir_version = 11;
+//  uint32 telc_version = 12;
   repeated SourceFile files = 1;
   repeated TypeDef types = 2;
   repeated Function funcs = 3;

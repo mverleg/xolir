@@ -12,3 +12,8 @@ message SourceLoc {
   uint32 start_loc = 2;
   uint32 end_loc = 3;
 }
+
+message Problem {
+  SourceLoc loc = 1;
+  string message = 2;
+}

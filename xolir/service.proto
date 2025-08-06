@@ -1,0 +1,43 @@
+
+//TODO @mark: separate package?
+
+syntax = "proto3";
+package xolir;
+
+import "xolir/program.proto";
+import "xolir/debug.proto";
+
+service Generator {
+    rpc features(XolirFeatures) returns (GeneratorFeatures) {}
+
+    rpc generate_clean(Program) returns (GeneratorResult) {}
+}
+
+message XolirFeatures {
+  string program_name = 10;
+  uint32 ir_version = 11;
+  uint32 telc_version = 12;
+  bool with_sources = 1;
+}
+
+enum Mode {
+  UNKNOWN = 0;
+  CLEAN = 1;
+}
+
+message GeneratorFeatures {
+  repeated Mode mode = 1;
+}
+
+enum GenerationStatus {
+  UNDEFINED = 0;
+  SUCCEEDED = 1;
+  INPUT_REJECTED = 2;
+  TECHNICAL_ERROR = 3;
+}
+
+message GeneratorResult {
+  GenerationStatus status = 1;
+  repeated Problem errors = 2;
+  repeated Problem warnings = 3;
+}

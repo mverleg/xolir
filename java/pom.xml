@@ -85,6 +85,16 @@
             </extension>
         </extensions>
 
+        <resources>
+            <resource>
+                <directory>${project.basedir}/..</directory>
+                <includes>
+                    <include>README*</include>
+                    <include>LICENSE*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -132,8 +142,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <!-- TODO @mark: include LICENSE, README and proto sources -->
 
     <profiles>
         <profile>

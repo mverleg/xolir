@@ -4,3 +4,5 @@ target/
 .run/
 tests/*.xolir
 tests/generated/
+*.pyc
+__pycache__/

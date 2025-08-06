@@ -1,7 +1,8 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
 if [ $# != 0 ] || [ "${1:-}" == "-h" ]; then
-    panic-in "$0" 'invokes ptoroc for codegen and does some bookkeeping; expects no arguments'
+    echo "$0: invokes protoc for codegen and does some bookkeeping; expects no arguments" 1>&2
+    exit 1
 fi
 
 VERSION=0.1.0

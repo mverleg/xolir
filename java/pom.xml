@@ -41,7 +41,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
-        <!-- Java versions -->
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
     </properties>
 
     <prerequisites>
@@ -124,7 +124,8 @@
                 <version>0.6.1</version>
                 <configuration>
                     <protoSourceRoot>${project.basedir}/../proto</protoSourceRoot>
-                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}
+                    </protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>
                         io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
@@ -139,6 +140,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version> <!-- or whatever version you're using -->
+                <configuration>
+                    <printSummary>false</printSummary>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <useFile>false</useFile> <!-- Prevents writing test logs to console -->
+                    <forkCount>0</forkCount> <!-- Optional: disable forking -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

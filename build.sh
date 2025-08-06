@@ -7,9 +7,9 @@ fi
 VERSION=0.1.0
 
 PYTHON_BASE=./target/python
-PYTHON_SRC="$PYTHON_BASE/xolir"
+PYTHON_SRC="$PYTHON_BASE/xolirpy"
 JAVA_BASE=./target/java
-JAVA_SRC="$JAVA_BASE/src/main/java/xolir"
+JAVA_SRC="$JAVA_BASE/src/main/java/xolirj"
 JAVA_RESOURCE="$JAVA_BASE/src/main/resources"
 RUST_BASE=./target/rust
 RUST_SRC="$RUST_BASE/src"

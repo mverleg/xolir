@@ -5,14 +5,14 @@ gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/xolir-python
 assert path.exists(gen_pth), f"run codegen to generate {gen_pth}"
 sys.path.insert(0, gen_pth)
 
-from xolir.builtin_type_pb2 import BuiltinType
-from xolir.builtin_function_pb2 import BuiltinFunc
-from xolir.type_pb2 import TypeRef, TypedName
-from xolir.struct_pb2 import Struct
-from xolir.function_pb2 import Function
-from xolir.expression_pb2 import Expression, Read, Store, Call, If, While, Return
-from xolir.debug_pb2 import SourceFile
-from xolir.tel_pb2 import TelProgram
+from xolirpy.builtin_type_pb2 import BuiltinType
+from xolirpy.builtin_function_pb2 import BuiltinFunc
+from xolirpy.type_pb2 import TypeRef, TypedName
+from xolirpy.struct_pb2 import Struct
+from xolirpy.function_pb2 import Function
+from xolirpy.expression_pb2 import Expression, Read, Store, Call, If, While, Return
+from xolirpy.debug_pb2 import SourceFile
+from xolirpy.tel_pb2 import TelProgram
 
 prog = TelProgram(
     program_name='euler2',

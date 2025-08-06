@@ -46,5 +46,5 @@ message While {
 }
 
 message Return {
-  optional Expression value = 1;
+  Expression value = 1;
 }

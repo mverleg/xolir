@@ -5,6 +5,12 @@ if [ $# != 0 ] || [ "${1:-}" == "-h" ]; then
     exit 1
 fi
 
+(
+  echo "generating java"
+  cd java
+  mvn package -q -T1C
+)
+
 VERSION=0.1.0
 
 PYTHON_BASE=./target/python

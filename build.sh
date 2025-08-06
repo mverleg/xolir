@@ -31,6 +31,12 @@ fi
   echo "rust done"
 )
 
+echo "python not ready yet" 1>&2
+exit 1
+
+echo "typescript not ready yet" 1>&2
+exit 1
+
 #VERSION=0.1.0
 #
 #PYTHON_BASE=./target/python

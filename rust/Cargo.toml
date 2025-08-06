@@ -2,6 +2,8 @@
 name = "xolir"
 version = "0.1.0"
 edition = "2024"
+readme = "../README.md"
+license = "Attribution-NoDerivatives 4.0 International"
 
 build = "build.rs"
 

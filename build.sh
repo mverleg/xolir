@@ -16,13 +16,13 @@ RUST_SRC="$RUST_BASE/src"
 
 mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
 
-bad_files=$(grep -EL '^syntax = "proto3";' xolir/*.proto)
+bad_files=$(grep -EL '^syntax = "proto3";' src/xolir/*.proto)
 if [ -n "$bad_files" ]; then
     printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
     exit 1
 fi
 
-bad_files=$(grep -EL '^package ' xolir/*.proto)
+bad_files=$(grep -EL '^package ' src/xolir/*.proto)
 if [ -n "$bad_files" ]; then
     printf "Files without package:\n%s\n" "$bad_files" 1>&2
     exit 1
@@ -33,7 +33,7 @@ docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
     --python_out="$PYTHON_SRC/.." \
     --java_out="$JAVA_SRC" \
     --rust_out=experimental-codegen=enabled,kernel=cpp:"$RUST_SRC" \
-    xolir/*.proto
+    src/xolir/*.proto
 
 cp LICENSE.txt "$PYTHON_BASE/"
 cp LICENSE.txt "$JAVA_BASE/"

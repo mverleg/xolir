@@ -11,18 +11,22 @@
                 {TypedName
                     name = "x",
                     type_id = {TypeRef
-                        target = #builtin(BuiltinType%REAL_64),
+                        target = #builtin({BuiltinType
+                            %REAL_64
+                        }),
                     },
                 },
                 {TypedName
                     name = "y",
                     type_id = {TypeRef
-                        target = #builtin(BuiltinType%REAL_64),
+                        target = #builtin({BuiltinType
+                            %REAL_64,
+                        }),
                     },
                 },
             ],
-        }),
-    ],
+        })
+    ]
     funcs = [
         {Function
             name = "scale",
@@ -38,7 +42,9 @@
                     {TypedName
                         name = "mul",
                         type_id = {TypeRef
-                            target = #builtin(BuiltinType%REAL_64),
+                            target = #builtin({BuiltinType
+                                %REAL_64,
+                            }),
                         }
                     }
                 ],
@@ -48,9 +54,8 @@
                     }
                 ],
             },
-            // todo
             locals = [],
             code = [],
         },
-    ],
+    ]
 }

@@ -1,6 +1,7 @@
 
 syntax = "proto3";
 package xolir;
+option java_package = "com.apivolve.xolir";
 
 import "xolir/expression.proto";
 import "xolir/refs.proto";

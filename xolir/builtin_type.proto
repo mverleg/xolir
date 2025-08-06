@@ -1,6 +1,7 @@
 
 syntax = "proto3";
 package xolir;
+option java_package = "com.apivolve.xolir";
 
 enum BuiltinType {
   S_INT_32 = 0;

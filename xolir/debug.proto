@@ -1,6 +1,7 @@
 
 syntax = "proto3";
 package xolir;
+option java_package = "com.apivolve.xolir";
 
 message SourceFile {
   string name = 1;

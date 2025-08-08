@@ -12,6 +12,9 @@ authors = [
 description = "Python protobuf classes for Tel IR api"
 readme = "README.md"
 requires-python = ">=3.8"
+dependencies = [
+    "grpcio",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -20,4 +23,9 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/mverleg/xolir"
 Issues = "https://github.com/mverleg/xolir/issues"
+
+[project.optional-dependencies]
+dev = [
+    "grpcio-tools",
+]
 

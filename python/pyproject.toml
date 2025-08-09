@@ -10,7 +10,7 @@ authors = [
     { name="Mark Verleg", email="mverleg.noreply@gmail.com" },
 ]
 description = "Python protobuf classes for Tel IR api"
-readme = "README.md"
+#readme = "../README.md"
 requires-python = ">=3.8"
 dependencies = [
     "grpcio",
@@ -28,5 +28,5 @@ Issues = "https://github.com/mverleg/xolir/issues"
 packages = ["xolir"]
 
 [tool.setuptools.cmdclass]
-build_py = "build_hook:ProtocBuildCommand"
+build_py = "build_hook.ProtocBuildCommand"
 

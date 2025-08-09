@@ -4,3 +4,7 @@ target/
 .run/
 tests/*.xolir
 tests/generated/
+*.egg-info
+dist/
+sdist/
+__pycache__/

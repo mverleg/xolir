@@ -34,13 +34,11 @@ fi
 (
   echo "generating python"
   cd python
+  python -m pip install pip build
   python -m build
   # twine upload
   echo "python done"
 )
-
-echo "python not ready yet" 1>&2
-exit 1
 
 echo "typescript not ready yet" 1>&2
 exit 1

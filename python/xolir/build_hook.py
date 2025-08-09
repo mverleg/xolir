@@ -2,6 +2,18 @@
 import os
 from setuptools.command.build_py import build_py as build_py_orig
 
+from setuptools.command.sdist import sdist as sdist_orig
+import pathlib, shutil
+
+class sdist_with_proto(sdist_orig):
+    def make_release_tree(self, base_dir, files):
+        super().make_release_tree(base_dir, files)
+        repo_root = pathlib.Path(__file__).resolve().parents[2]
+        repo_proto = repo_root / "proto"
+        target = pathlib.Path(base_dir) / "proto"
+        if repo_proto.exists():
+            shutil.copytree(repo_proto, target, dirs_exist_ok=True)
+
 class ProtocBuildCommand(build_py_orig):
     """Custom build_py to generate gRPC Python code before packaging."""
 

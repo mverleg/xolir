@@ -28,5 +28,6 @@ Issues = "https://github.com/mverleg/xolir/issues"
 packages = ["xolir"]
 
 [tool.setuptools.cmdclass]
-build_py = "build_hook.ProtocBuildCommand"
+sdist = "xolir.build_hook.sdist_with_proto"
+build_py = "xolir.build_hook.ProtocBuildCommand"
 

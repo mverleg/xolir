@@ -1,102 +1,87 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
-if [ $# != 0 ] || [ "${1:-}" == "-h" ]; then
-    echo "$0: invokes protoc for codegen and does some bookkeeping; expects no arguments" 1>&2
+function cli() {
+    cmd="${1:-}"
+    case "$cmd" in
+      "")
+        # No subcommand: proceed with legacy default build behavior
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      build)
+        check_proto
+        build
+        exit 0
+        ;;
+      clean|upload)
+        echo "Subcommand '$cmd' recognized but not implemented yet." 1>&2
+        exit 2
+        ;;
+      *)
+        echo "Unknown subcommand: '$cmd'; expected one of build, clean, upload or help" 1>&2
+        usage 1>&2
+        exit 1
+        ;;
+    esac
+}
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [subcommand]
+
+Subcommands:
+  build    Build/generate artifacts (not implemented yet)
+  clean    Clean generated/build artifacts (not implemented yet)
+  upload   Upload/publish artifacts (not implemented yet)
+
+If no subcommand is provided, the legacy default build is executed.
+EOF
+}
+
+function check_proto() {
+    bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
+    if [ -n "$bad_files" ]; then
+        printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
+        exit 1
+    fi
+
+    bad_files=$(grep -EL '^package ' proto/xolir/*.proto)
+    if [ -n "$bad_files" ]; then
+        printf "Files without package:\n%s\n" "$bad_files" 1>&2
+        exit 1
+    fi
+}
+
+function build() {
+    (
+      echo "generating java"
+      cd java
+      mvn package -q -T1C
+      echo "java done"
+    )
+
+    (
+      echo "generating rust"
+      cd rust
+      cargo build -q
+      echo "rust done"
+    )
+
+    (
+      echo "generating python"
+      cd python
+      python -m pip install pip build
+      python -m build
+      # twine upload
+      echo "python done"
+    )
+
+    echo "typescript not ready yet" 1>&2
     exit 1
-fi
+}
 
-bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
-if [ -n "$bad_files" ]; then
-    printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
-    exit 1
-fi
-
-bad_files=$(grep -EL '^package ' proto/xolir/*.proto)
-if [ -n "$bad_files" ]; then
-    printf "Files without package:\n%s\n" "$bad_files" 1>&2
-    exit 1
-fi
-
-(
-  echo "generating java"
-  cd java
-  mvn package -q -T1C
-  echo "java done"
-)
-
-(
-  echo "generating rust"
-  cd rust
-  cargo build -q
-  echo "rust done"
-)
-
-(
-  echo "generating python"
-  cd python
-  python -m pip install pip build
-  python -m build
-  # twine upload
-  echo "python done"
-)
-
-echo "typescript not ready yet" 1>&2
+cli "$?"
+echo "should not reach this, cli should exit" 1>&2
 exit 1
-
-#VERSION=0.1.0
-#
-#PYTHON_BASE=./target/python
-#PYTHON_SRC="$PYTHON_BASE/xolirpy"
-#JAVA_BASE=./target/java
-#JAVA_SRC="$JAVA_BASE/src/main/java/xolirj"
-#JAVA_RESOURCE="$JAVA_BASE/src/main/resources"
-#RUST_BASE=./target/rust
-#RUST_SRC="$RUST_BASE/src"
-#
-#mkdir -p "$PYTHON_SRC" "$JAVA_SRC" "$JAVA_RESOURCE" "$RUST_SRC"
-#
-#bad_files=$(grep -EL '^syntax = "proto3";' xolir/*.proto)
-#if [ -n "$bad_files" ]; then
-#    printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
-#    exit 1
-#fi
-#
-#bad_files=$(grep -EL '^package ' xolir/*.proto)
-#if [ -n "$bad_files" ]; then
-#    printf "Files without package:\n%s\n" "$bad_files" 1>&2
-#    exit 1
-#fi
-#
-#echo 'compiling protoc'
-#docker run --rm -v"$(pwd)":/code -w /code rvolosatovs/protoc -I=. \
-#    --python_out="$PYTHON_SRC/.." \
-#    --java_out="$JAVA_SRC" \
-#    --rust_out=experimental-codegen=enabled,kernel=cpp:"$RUST_SRC" \
-#    xolir/*.proto
-#
-#cp LICENSE.txt "$PYTHON_BASE/"
-#cp LICENSE.txt "$JAVA_BASE/"
-#cp LICENSE.txt "$JAVA_RESOURCE/"
-#cp LICENSE.txt "$RUST_BASE/"
-#
-#cp -r static/* target
-#
-#target="$(pwd)/target"
-#(
-#    echo 'packing python'
-#    cd "$PYTHON_BASE"
-#    zip -rq "$target/xolir-python.zip" .
-#)
-#(
-#    cd "$JAVA_BASE"
-#    echo 'compiling java'
-#    mvn package -q -Pfat-jar -Drevision=$VERSION
-#    cp target/*.jar "$target/"
-#)
-#(
-#    cd "$RUST_BASE"
-#    zip -rq "$target/xolir-rust.zip" .
-#)
-#
-#echo done
-#

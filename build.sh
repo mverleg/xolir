@@ -31,6 +31,14 @@ fi
   echo "rust done"
 )
 
+(
+  echo "generating python"
+  cd python
+  python -m build
+  # twine upload
+  echo "python done"
+)
+
 echo "python not ready yet" 1>&2
 exit 1
 

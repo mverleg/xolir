@@ -1,10 +1,10 @@
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel", "grpcio-tools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "xolirpy"
+name = "xolir"
 version = "0.0.1"
 authors = [
     { name="Mark Verleg", email="mverleg.noreply@gmail.com" },
@@ -24,8 +24,9 @@ classifiers = [
 Homepage = "https://github.com/mverleg/xolir"
 Issues = "https://github.com/mverleg/xolir/issues"
 
-[project.optional-dependencies]
-dev = [
-    "grpcio-tools",
-]
+[tool.setuptools]
+packages = ["xolir"]
+
+[tool.setuptools.cmdclass]
+build_py = "build_hook:ProtocBuildCommand"
 

@@ -63,26 +63,26 @@ function check_proto() {
 }
 
 function clean() {
-    (
+    {
       echo "cleaning java"
       cd java
       mvn clean -q -T1C
       echo "cleaning java done"
-    ) &
+    } &
 
-    (
+    {
       echo "cleaning rust"
       cd rust
       cargo clean -q
       echo "cleaning rust done"
-    ) &
+    } &
 
-    (
+    {
       echo "cleaning python"
       cd python
       rm -rf dist/ *.egg-info
       echo "cleaning python done"
-    ) &
+    } &
 
     wait
 
@@ -91,21 +91,21 @@ function clean() {
 }
 
 function build() {
-    (
+    {
       echo "generating java"
       cd java
       mvn package -q -T1C -Pfat-jar
       echo "java done"
-    ) &
+    } &
 
-    (
+    {
       echo "generating rust"
       cd rust
       cargo build -q
       echo "rust done"
-    ) &
+    } &
 
-    (
+    {
       echo "generating python"
       cd python
       python -m pip install -q pip build
@@ -113,7 +113,7 @@ function build() {
       pytest -q
       # twine upload
       echo "python done"
-    ) &
+    } &
 
     wait
 

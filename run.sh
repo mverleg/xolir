@@ -10,12 +10,12 @@ function cli() {
     fi
     case "$cmd" in
       ""|build)
-        check_proto
+        lint_proto
         build
         exit 0
         ;;
       test)
-        check_proto
+        lint_proto
         build
         run_tests
         exit 0
@@ -54,7 +54,7 @@ If no subcommand is provided, the default build is executed.
 EOF
 }
 
-function check_proto() {
+function lint_proto() {
     bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
     if [ -n "$bad_files" ]; then
         printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2

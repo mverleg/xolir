@@ -1,8 +1,8 @@
 // Export all generated protobuf types
-export * from '../generated/xolir';
+export * from '../target/xolir';
 
 // Re-export the main namespace for convenience
-import { xolir } from '../generated/xolir';
+import { xolir } from '../target/xolir';
 export { xolir };
 
 // Export default namespace

@@ -17,12 +17,11 @@
   },
   "include": [
     "src/**/*",
-    "generated/**/*"
+    "target/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "test.js",
-    "generate-proto.js"
+    "test.js"
   ]
 }

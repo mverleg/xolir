@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run generate-proto && tsc",
-    "generate-proto": "node generate-proto.js",
-    "clean": "rm -rf dist/ generated/",
+    "generate-proto": "mkdir -p target && npx pbjs -t static-module -w commonjs -p ../proto -o target/xolir.js ../proto/xolir/*.proto && npx pbts -o target/xolir.d.ts target/xolir.js",
+    "clean": "rm -rf dist/ target/",
     "test": "node test.js"
   },
   "keywords": ["protobuf", "typescript", "xolir"],

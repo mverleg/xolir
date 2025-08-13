@@ -3,16 +3,13 @@
 function cli() {
     cmd="${1:-}"
     case "$cmd" in
-      "")
-        # No subcommand: proceed with legacy default build behavior
+      ""|build)
+        check_proto
+        build
+        exit 0
         ;;
       -h|--help)
         usage
-        exit 0
-        ;;
-      build)
-        check_proto
-        build
         exit 0
         ;;
       clean|upload)
@@ -36,7 +33,7 @@ Subcommands:
   clean    Clean generated/build artifacts (not implemented yet)
   upload   Upload/publish artifacts (not implemented yet)
 
-If no subcommand is provided, the legacy default build is executed.
+If no subcommand is provided, the default build is executed.
 EOF
 }
 
@@ -72,8 +69,9 @@ function build() {
     (
       echo "generating python"
       cd python
-      python -m pip install pip build
+      python -m pip install -q pip build
       python -m build
+      pytest -q
       # twine upload
       echo "python done"
     )
@@ -82,6 +80,6 @@ function build() {
     exit 1
 }
 
-cli "$?"
+cli "$@"
 echo "should not reach this, cli should exit" 1>&2
 exit 1

@@ -15,13 +15,13 @@ The IR is specified in Protobuf3 format. You can compile this yourself with prot
 
 ```bash
 rm -rf target/ &&\
-bash build.sh &&\
+bash run.sh build &&\
 sudo chown $USER:$USER -R target/
 ```
 
 ## Tests
 
-There is a test that generates some Xolir data with python, and generates Java code.
+There is a test that generates some Xolir data with python and generates Java code.
 
 See `tests/test.sh` to run this.
 

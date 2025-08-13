@@ -1,7 +1,13 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
 function cli() {
+    all_cmds='build, test, clean, upload or help'
     cmd="${1:-}"
+    if [ $# -gt 1 ]; then
+        echo "Error: Too many arguments provided. Expected at most one argument: $all_cmds." 1>&2
+        usage 1>&2
+        exit 1
+    fi
     case "$cmd" in
       ""|build)
         check_proto
@@ -18,16 +24,16 @@ function cli() {
         clean
         exit 0
         ;;
-      -h|--help)
+      -h|--help|help)
         usage
         exit 0
         ;;
       upload)
-        echo "Subcommand '$cmd' recognized but not implemented yet." 1>&2
+        echo "Subcommand '$cmd' recognized but not implemented yet, other options: $all_cmds." 1>&2
         exit 2
         ;;
       *)
-        echo "Unknown subcommand: '$cmd'; expected one of build, clean, upload, test or help" 1>&2
+        echo "Unknown subcommand: '$cmd'; expected one of $all_cmds" 1>&2
         usage 1>&2
         exit 1
         ;;
@@ -85,6 +91,7 @@ function clean() {
     } &
 
     wait
+    echo 'cleaning done'
 
     echo "typescript not ready yet" 1>&2
     exit 1
@@ -116,6 +123,7 @@ function build() {
     } &
 
     wait
+    echo 'building done'
 
     echo "typescript not ready yet" 1>&2
     exit 1

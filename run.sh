@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
 function cli() {
-    all_cmds='build, test, clean, upload or help'
+    all_cmds='build, quickcheck, test, clean, upload or help'
     cmd="${1:-}"
     if [ $# -gt 1 ]; then
         echo "Error: Too many arguments provided. Expected at most one argument: $all_cmds." 1>&2
@@ -9,13 +9,17 @@ function cli() {
         exit 1
     fi
     case "$cmd" in
+      quickcheck)
+        check
+        exit 0
+        ;;
       ""|build)
-        lint_proto
+        check
         build
         exit 0
         ;;
       test)
-        lint_proto
+        check
         build
         run_tests
         exit 0
@@ -54,7 +58,7 @@ If no subcommand is provided, the default build is executed.
 EOF
 }
 
-function lint_proto() {
+function check() {
     bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
     if [ -n "$bad_files" ]; then
         printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
@@ -66,6 +70,18 @@ function lint_proto() {
         printf "Files without package:\n%s\n" "$bad_files" 1>&2
         exit 1
     fi
+
+    # Use protoc for comprehensive proto validation without generating code
+    # Create temporary directory for output and clean up immediately
+    TEMP_DIR=$(mktemp -d)
+    trap "rm -rf '$TEMP_DIR'" EXIT
+    
+    if ! protoc --proto_path=proto --cpp_out="$TEMP_DIR" proto/xolir/*.proto 2>&1; then
+        echo "Proto validation failed - protoc reported errors above" >&2
+        exit 1
+    fi
+    
+    echo "Proto validation passed!"
 }
 
 function clean() {

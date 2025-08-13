@@ -14,11 +14,15 @@ function cli() {
         run_tests
         exit 0
         ;;
+      clean)
+        clean
+        exit 0
+        ;;
       -h|--help)
         usage
         exit 0
         ;;
-      clean|upload)
+      upload)
         echo "Subcommand '$cmd' recognized but not implemented yet." 1>&2
         exit 2
         ;;
@@ -58,30 +62,60 @@ function check_proto() {
     fi
 }
 
+function clean() {
+    (
+      echo "cleaning java"
+      cd java
+      mvn clean -q -T1C
+      echo "cleaning java done"
+    ) &
+
+    (
+      echo "cleaning rust"
+      cd rust
+      cargo clean -q
+      echo "cleaning rust done"
+    ) &
+
+    (
+      echo "cleaning python"
+      cd python
+      rm -rf dist/ *.egg-info
+      echo "cleaning python done"
+    ) &
+
+    wait
+
+    echo "typescript not ready yet" 1>&2
+    exit 1
+}
+
 function build() {
     (
       echo "generating java"
       cd java
       mvn package -q -T1C -Pfat-jar
       echo "java done"
-    )
+    ) &
 
     (
       echo "generating rust"
       cd rust
       cargo build -q
       echo "rust done"
-    )
+    ) &
 
     (
       echo "generating python"
       cd python
       python -m pip install -q pip build
-      python -m build
+      python -m build 1>/dev/null
       pytest -q
       # twine upload
       echo "python done"
-    )
+    ) &
+
+    wait
 
     echo "typescript not ready yet" 1>&2
     exit 1

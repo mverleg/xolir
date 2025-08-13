@@ -8,6 +8,12 @@ function cli() {
         build
         exit 0
         ;;
+      test)
+        check_proto
+        build
+        run_tests
+        exit 0
+        ;;
       -h|--help)
         usage
         exit 0
@@ -17,7 +23,7 @@ function cli() {
         exit 2
         ;;
       *)
-        echo "Unknown subcommand: '$cmd'; expected one of build, clean, upload or help" 1>&2
+        echo "Unknown subcommand: '$cmd'; expected one of build, clean, upload, test or help" 1>&2
         usage 1>&2
         exit 1
         ;;
@@ -30,6 +36,7 @@ Usage: $(basename "$0") [subcommand]
 
 Subcommands:
   build    Build/generate artifacts (not implemented yet)
+  test     Run tests after building artifacts
   clean    Clean generated/build artifacts (not implemented yet)
   upload   Upload/publish artifacts (not implemented yet)
 
@@ -55,7 +62,7 @@ function build() {
     (
       echo "generating java"
       cd java
-      mvn package -q -T1C
+      mvn package -q -T1C -Pfat-jar
       echo "java done"
     )
 
@@ -78,6 +85,25 @@ function build() {
 
     echo "typescript not ready yet" 1>&2
     exit 1
+}
+
+function run_tests() {
+    base="$(realpath tests)"
+    xolir_pth="$base/euler2.xolir"
+
+    # Must have:
+    # pip install protobuf
+    # pip install -e "$(git rev-parse --show-toplevel)/target/python"
+    echo 'generating sample xolir'
+    python3 "$base/create_euler2_xolir.py"
+
+    (
+      echo 'compiling sample xolir to java'
+      cd "$base/generate_java"
+      MAVEN_OPTS="-ea" mvn compile exec:java -e -q -Dexec.args="$xolir_pth"
+    )
+
+    echo 'done'
 }
 
 cli "$@"

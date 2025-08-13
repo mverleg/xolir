@@ -90,11 +90,15 @@ function clean() {
       echo "cleaning python done"
     } &
 
+    {
+      echo "cleaning typescript"
+      cd typescript
+      npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
+      echo "cleaning typescript done"
+    } &
+
     wait
     echo 'cleaning done'
-
-    echo "typescript not ready yet" 1>&2
-    exit 1
 }
 
 function build() {
@@ -122,11 +126,16 @@ function build() {
       echo "python done"
     } &
 
+    {
+      echo "generating typescript"
+      cd typescript
+      npm install --silent
+      npm run build --silent
+      echo "typescript done"
+    } &
+
     wait
     echo 'building done'
-
-    echo "typescript not ready yet" 1>&2
-    exit 1
 }
 
 function run_tests() {

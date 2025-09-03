@@ -10,3 +10,4 @@ sdist/
 __pycache__/
 dependency-reduced-pom.xml
 node_modules/
+python/README.md

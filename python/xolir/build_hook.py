@@ -20,6 +20,7 @@ class ProtocBuildCommand(build_py_orig):
     def run(self):
         from grpc_tools import protoc
         proto_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "xolir"))
+        proto_parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto"))
         out_dir = os.path.join(os.path.dirname(__file__), "xolir")
         os.makedirs(out_dir, exist_ok=True)
 
@@ -28,7 +29,7 @@ class ProtocBuildCommand(build_py_orig):
                 proto_file = os.path.join(proto_dir, filename)
                 protoc.main([
                     "grpc_tools.protoc",
-                    f"-I{proto_dir}",
+                    f"-I{proto_parent_dir}",
                     f"--python_out={out_dir}",
                     f"--grpc_python_out={out_dir}",
                     proto_file,

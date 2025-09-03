@@ -118,6 +118,7 @@ function clean() {
 }
 
 function build() {
+    mon cp 'README.md' 'python/README.md'
     {
       echo "generating java"
       cd java
@@ -151,6 +152,7 @@ function build() {
     } &
 
     wait
+    mon rm 'python/README.md'
     echo 'building done'
 }
 

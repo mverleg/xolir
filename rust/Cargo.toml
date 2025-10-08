@@ -3,7 +3,7 @@ name = "xolir"
 version = "0.1.0"
 edition = "2024"
 readme = "../README.md"
-license = "Attribution-NoDerivatives 4.0 International"
+license = "CC-BY-NC-ND-4.0"
 description = "Rust protobuf classes for Tel IR api"
 include = [
     "src/**/*",

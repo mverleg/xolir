@@ -10,13 +10,17 @@
     "clean": "rm -rf dist/ target/",
     "test": "node test.js"
   },
-  "keywords": ["protobuf", "typescript", "xolir"],
+  "keywords": [
+    "protobuf",
+    "typescript",
+    "xolir"
+  ],
   "author": "Mark Verleg <mverleg.noreply@gmail.com>",
   "license": "CC-BY-NC-ND-4.0",
   "homepage": "https://github.com/mverleg/xolir",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mverleg/xolir.git"
+    "url": "git+https://github.com/mverleg/xolir.git"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

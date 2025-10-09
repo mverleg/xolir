@@ -10,8 +10,8 @@ message SourceFile {
 
 message SourceLoc {
   uint64 source_ix = 1;
-  uint32 start_loc = 2;
-  uint32 end_loc = 3;
+  uint32 first_loc = 2;
+  uint32 after_loc = 3;
 }
 
 message Problem {

@@ -13,12 +13,12 @@ function cli() {
         check
         exit 0
         ;;
-      ""|build)
+      build)
         check
         build
         exit 0
         ;;
-      test)
+      ""|test)
         check
         build
         run_tests
@@ -49,6 +49,7 @@ usage() {
 Usage: $(basename "$0") [subcommand]
 
 Subcommands:
+  quickcheck Valiate the proto files
   build    Build/generate artifacts (not implemented yet)
   test     Run tests after building artifacts
   clean    Clean generated/build artifacts (not implemented yet)
@@ -118,7 +119,7 @@ function clean() {
 }
 
 function build() {
-    mon cp 'README.md' 'python/README.md'
+    cp 'README.md' 'python/README.md'
     {
       echo "generating java"
       cd java
@@ -152,7 +153,7 @@ function build() {
     } &
 
     wait
-    mon rm 'python/README.md'
+    rm 'python/README.md'
     echo 'building done'
 }
 

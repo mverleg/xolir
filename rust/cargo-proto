@@ -1,0 +1,16 @@
+#!/usr/bin/env -S bash -eEu -o pipefail
+
+dir="$(realpath "$(dirname "$0")")"
+cd "$dir"
+
+cleanup() {
+    echo 'cleaning up copied protos'
+    rm -rf "${dir}/proto"
+}
+trap cleanup EXIT
+
+echo 'copying proto files'
+cp -r "${dir}/../proto/" "${dir}/proto"
+
+cargo "$@"
+

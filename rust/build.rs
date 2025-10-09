@@ -1,20 +1,15 @@
+use ::std::path::Path;
 
 fn main() {
-    // Check if we're in a packaged environment (proto files are in the package root)
-    let proto_dir = if std::path::Path::new("proto").exists() {
-        "proto"
-    } else {
-        "../proto"
-    };
-    
-    let service_proto = format!("{}/xolir/service.proto", proto_dir);
-    
+    if !Path::new("proto").exists() {
+        panic!("proto directory not found, make sure to run with e.g. `./cargo-proto build`");
+    }
     tonic_build::configure()
         .build_server(false)
         .compile_protos(
-            &[&service_proto],
-            &[proto_dir],  // imports
+            &["proto/xolir/service.proto"],
+            &["proto"],  // imports
         )
-        .expect("Failed to compile protos");
+        .expect("Failed to compile protos, make sure to run with e.g. `./cargo-proto build`");
 
 }

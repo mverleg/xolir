@@ -101,7 +101,7 @@ function clean() {
     {
       echo "cleaning rust"
       cd rust
-      cargo clean -q
+      ./cargo-proto clean -q
       echo "cleaning rust done"
     } &
 
@@ -135,7 +135,7 @@ function build() {
     {
       echo "generating rust"
       cd rust
-      cargo publish --dry-run
+      ./cargo-proto build -q
       echo "rust done"
     } &
 
@@ -194,7 +194,7 @@ function upload() {
     (
       echo "uploading rust"
       cd rust
-      cargo publish -q
+      ./cargo-proto publish -q
       echo "rust upload done"
     ) || printf "\033[0;31mRUST UPLOAD FAILED!!\033[0m\n" 1>&2
 

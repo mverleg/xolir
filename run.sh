@@ -33,8 +33,13 @@ function cli() {
         exit 0
         ;;
       upload)
-        echo "Subcommand '$cmd' recognized but not implemented yet, other options: $all_cmds." 1>&2
-        exit 2
+        echo "Subcommand '$cmd' recognized, only partially implemented!" 1>&2
+        check
+        build
+        #run_tests
+        #TODO @mark: ^
+        upload
+        exit 0
         ;;
       *)
         echo "Unknown subcommand: '$cmd'; expected one of $all_cmds" 1>&2
@@ -173,7 +178,20 @@ function run_tests() {
       MAVEN_OPTS="-ea" mvn compile exec:java -e -q -Dexec.args="$xolir_pth"
     )
 
-    echo 'done'
+    echo 'test done'
+}
+
+function upload() {
+    printf "\033[0;31mupload only implemented for python\033[0m\n" 1>&2
+
+    (
+      echo "uploading python"
+      cd python
+      python -m twine upload dist/*
+      echo "python upload done"
+    ) || printf "\033[0;31mPYTHON UPLOAD FAILED!!\033[0m\n" 1>&2
+
+    echo 'upload done'
 }
 
 cli "$@"

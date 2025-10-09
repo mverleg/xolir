@@ -1,7 +1,7 @@
 from os import path
 import sys
 
-gen_pth = path.abspath(path.join(path.dirname(__file__), '../target/xolir-python.zip'))
+gen_pth = path.abspath(path.join(path.dirname(__file__), '../python/dist/'))
 assert path.exists(gen_pth), f"run codegen to generate {gen_pth}"
 sys.path.insert(0, gen_pth)
 

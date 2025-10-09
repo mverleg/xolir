@@ -135,7 +135,7 @@ function build() {
     {
       echo "generating rust"
       cd rust
-      cargo build -q
+      cargo publish --dry-run
       echo "rust done"
     } &
 
@@ -190,6 +190,13 @@ function upload() {
       python -m twine upload dist/*
       echo "python upload done"
     ) || printf "\033[0;31mPYTHON UPLOAD FAILED!!\033[0m\n" 1>&2
+
+    (
+      echo "uploading rust"
+      cd rust
+      cargo publish -q
+      echo "rust upload done"
+    ) || printf "\033[0;31mRUST UPLOAD FAILED!!\033[0m\n" 1>&2
 
     echo 'upload done'
 }

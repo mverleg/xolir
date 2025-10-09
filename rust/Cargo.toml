@@ -4,11 +4,16 @@ version = "0.1.0"
 edition = "2024"
 readme = "../README.md"
 license = "Attribution-NoDerivatives 4.0 International"
+include = [
+    "src/**/*",
+    "build.rs",
+    "../proto/**/*.proto"
+]
 
 build = "build.rs"
 
 [dependencies]
-prost = "0.13.1"
+prost = "0.13.5"
 tonic = "0.13.1"
 
 [build-dependencies]

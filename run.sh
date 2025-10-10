@@ -198,6 +198,13 @@ function upload() {
       echo "rust upload done"
     ) || printf "\033[0;31mRUST UPLOAD FAILED!!\033[0m\n" 1>&2
 
+    (
+      echo "uploading typescript"
+      cd typescript
+      npm publish
+      echo "typescript upload done"
+    ) || printf "\033[0;31mTYPESCRIPT UPLOAD FAILED!!\033[0m\n" 1>&2
+
     echo 'upload done'
 }
 

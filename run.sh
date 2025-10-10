@@ -58,6 +58,7 @@ Subcommands:
   build    Build/generate artifacts (not implemented yet)
   test     Run tests after building artifacts
   clean    Clean generated/build artifacts (not implemented yet)
+  bump     Bump the version of dependencies
   upload   Upload/publish artifacts (not implemented yet)
 
 If no subcommand is provided, the default build is executed.
@@ -183,6 +184,8 @@ function run_tests() {
 
 function upload() {
     printf "\033[0;31mupload only implemented for python\033[0m\n" 1>&2
+
+
 
     (
       echo "uploading python"

@@ -223,6 +223,13 @@ function upload() {
       echo "typescript upload done"
     ) || printf "\033[0;31mTYPESCRIPT UPLOAD FAILED!!\033[0m\n" 1>&2
 
+    (
+      echo "uploading java"
+      cd java
+      mvn package deploy -q -T1C -Pfat-jar -Drevision="$version"
+      echo "java upload done"
+    ) || printf "\033[0;31mJAVA UPLOAD FAILED!!\033[0m\n" 1>&2
+
     echo 'upload done'
 }
 

@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.apivolve</groupId>
+    <groupId>nl.markv</groupId>
     <artifactId>xolir</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
@@ -14,11 +14,23 @@
     <developers>
         <developer>
             <name>Mark Verleg</name>
-            <email>mverleg.noreply@gmail.com</email>
+            <email>markv.nl.dev@gmail.com</email>
             <url>https://markv.nl/</url>
         </developer>
     </developers>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <inceptionYear>2021</inceptionYear>
     <licenses>
         <license>
             <!-- license file is included in the jar -->
@@ -26,6 +38,11 @@
             <url>https://creativecommons.org/licenses/by-nc-nd/4.0/</url>
         </license>
     </licenses>
+    <scm>
+        <connection>scm:git:git://github.com/mverleg/java-result.git</connection>
+        <developerConnection>scm:git:git://github.com/mverleg/java-result.git</developerConnection>
+        <url>https://github.com/mverleg/java-result</url>
+    </scm>
 
     <properties>
         <revision>local-SNAPSHOT</revision>

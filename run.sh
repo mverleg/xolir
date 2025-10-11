@@ -183,9 +183,32 @@ function run_tests() {
 }
 
 function upload() {
-    printf "\033[0;31mupload only implemented for python\033[0m\n" 1>&2
 
+    if [ ! -f "VERSION" ]; then
+        echo 'no VERSION file?' 1>&2
+        exit 1
+    fi
+    version=$(cat VERSION | tr -d '\n\r')
 
+    if git rev-parse "v$version" >/dev/null 2>&1; then
+        printf "\033[0;33mWarning: Tag v%s already exists!\033[0m\n" "$version" 1>&2
+        printf "Do you want to continue? (y/N): " 1>&2
+        read -r response
+        case "$response" in
+            [yY][eE][sS]|[yY]) 
+                echo "Continuing with existing tag..."
+                ;;
+            *)
+                echo "Aborting upload."
+                exit 1
+                ;;
+        esac
+    else
+        # Create new tag
+        echo "creating tag v$version"
+        git tag -am "v$version" "v$version"
+    fi
+    exit 1  #TODO @mark: TEMPORARY! REMOVE THIS!
 
     (
       echo "uploading python"

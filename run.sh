@@ -191,18 +191,11 @@ function upload() {
     version=$(cat VERSION | tr -d '\n\r')
 
     if git rev-parse "v$version" >/dev/null 2>&1; then
-        printf "\033[0;33mWarning: Tag v%s already exists!\033[0m\n" "$version" 1>&2
-        printf "Do you want to continue? (y/N): " 1>&2
+        printf "\033[0;33mwarning: tag v%s already exists!\033[0m\nyou can create a new version by calling '$0 bump'\ndo you want to upload this version? (y/N): " "$version" 1>&2
         read -r response
-        case "$response" in
-            [yY][eE][sS]|[yY]) 
-                echo "Continuing with existing tag..."
-                ;;
-            *)
-                echo "Aborting upload."
-                exit 1
-                ;;
-        esac
+        if ! [[ "$response" =~ ^[yY]([eE][sS])?$ ]]; then
+            echo "aborting upload." >&2; exit 1
+        fi
     else
         # Create new tag
         echo "creating tag v$version"

@@ -4,12 +4,12 @@ dir="$(realpath "$(dirname "$0")")"
 cd "$dir"
 
 cleanup() {
-    echo 'cleaning up copied protos'
+    echo 'cleaning up copied protos after cargo'
     rm -rf "${dir}/proto"
 }
 trap cleanup EXIT
 
-echo 'copying proto files'
+echo 'copying proto files before cargo'
 cp -r "${dir}/../proto/" "${dir}/proto"
 
 cargo "$@"

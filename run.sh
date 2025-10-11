@@ -68,13 +68,13 @@ EOF
 function check() {
     bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
     if [ -n "$bad_files" ]; then
-        printf "Files without syntax 3:\n%s\n" "$bad_files" 1>&2
+        printf "files without syntax 3:\n%s\n" "$bad_files" 1>&2
         exit 1
     fi
 
     bad_files=$(grep -EL '^package ' proto/xolir/*.proto)
     if [ -n "$bad_files" ]; then
-        printf "Files without package:\n%s\n" "$bad_files" 1>&2
+        printf "files without package:\n%s\n" "$bad_files" 1>&2
         exit 1
     fi
 
@@ -84,11 +84,11 @@ function check() {
     trap "rm -rf '$TEMP_DIR'" EXIT
     
     if ! protoc --proto_path=proto --cpp_out="$TEMP_DIR" proto/xolir/*.proto 2>&1; then
-        echo "Proto validation failed - protoc reported errors above" >&2
+        echo "proto validation failed - protoc reported errors above" >&2
         exit 1
     fi
     
-    echo "Proto validation passed!"
+    echo "proto validation passed!"
 }
 
 function clean() {
@@ -191,7 +191,7 @@ function upload() {
     version=$(cat VERSION | tr -d '\n\r')
 
     if git rev-parse "v$version" >/dev/null 2>&1; then
-        printf "\033[0;33mwarning: tag v%s already exists!\033[0m\nyou can create a new version by calling '$0 bump'\ndo you want to upload this version? (y/N): " "$version" 1>&2
+        printf "\033[0;35mwarning: tag v%s already exists!\033[0m\nyou can create a new version by calling '$0 bump'\ndo you want to upload this version? (y/N): " "$version" 1>&2
         read -r response
         if ! [[ "$response" =~ ^[yY]([eE][sS])?$ ]]; then
             echo "aborting upload." >&2; exit 1
@@ -201,7 +201,6 @@ function upload() {
         echo "creating tag v$version"
         git tag -am "v$version" "v$version"
     fi
-    exit 1  #TODO @mark: TEMPORARY! REMOVE THIS!
 
     (
       echo "uploading python"

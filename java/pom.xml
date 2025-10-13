@@ -41,7 +41,7 @@
     </scm>
 
     <properties>
-        <revision>local-SNAPSHOT</revision>
+        <revision>0.1.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <!-- Dependency versions -->

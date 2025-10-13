@@ -226,7 +226,7 @@ function upload() {
     (
       echo "uploading java"
       cd java
-      mvn package deploy -q -T1C -Pfat-jar -Drevision="$version"
+      mvn package deploy -q -T1C
       echo "java upload done"
     ) || printf "\033[0;31mJAVA UPLOAD FAILED!!\033[0m\n" 1>&2
 

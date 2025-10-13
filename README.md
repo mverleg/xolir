@@ -11,19 +11,43 @@ That is Xolir - a cross-language intermediary representation (xo l ir). It is ma
 
 ## Usage
 
-The IR is specified in Protobuf3 format. You can compile this yourself with protoc 
+The IR is specified in Protobuf3 format, with accompanying codegen.
 
-```bash
-rm -rf target/ &&\
-bash run.sh build &&\
-sudo chown $USER:$USER -R target/
+### Artifacts
+
+[Rust (cargo)](https://crates.io/crates/xolir):
+
+```shell
+cargo add xolir
 ```
 
-## Tests
+[Python (pypi)](https://pypi.org/project/xolir/):
 
-There is a test that generates some Xolir data with python and generates Java code.
+```shell
+pip install xolir
+```
 
-See `tests/test.sh` to run this.
+[Java (nexus)](https://central.sonatype.com/artifact/nl.markv/xolir):
+
+```xml
+<dependency>
+    <groupId>nl.markv</groupId>
+    <artifactId>xolir</artifactId>
+    <version>0.100.0</version>  <!-- check versions at https://central.sonatype.com/artifact/nl.markv/xolir -->
+</dependency>
+```
+
+[Typescript (npm)](https://www.npmjs.com/package/xolir):
+
+```shell
+npm install xolir
+```
+
+You can also build locally with protoc:
+
+```bash
+bash run.sh test
+```
 
 ## Implementation
 

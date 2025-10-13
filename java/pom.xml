@@ -42,6 +42,7 @@
 
     <properties>
         <revision>0.1.0</revision>
+        <!-- version is auto-bumped based on the xolir/VERSION file -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <!-- Dependency versions -->

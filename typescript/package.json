@@ -1,6 +1,6 @@
 {
   "name": "xolir",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "TypeScript protobuf classes for Tel IR api",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,6 +1,7 @@
 [package]
 name = "xolir"
 version = "0.1.0"
+# version is auto-bumped based on the xolir/VERSION file
 edition = "2024"
 readme = "../README.md"
 license = "CC-BY-NC-ND-4.0"

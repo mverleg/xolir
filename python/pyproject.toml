@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xolir"
-version = "0.0.1"
+version = "0.1.0"
+# version is auto-bumped based on the xolir/VERSION file
 authors = [
     { name="Mark Verleg", email="mverleg.noreply@gmail.com" },
 ]

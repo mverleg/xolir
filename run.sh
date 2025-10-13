@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
 function cli() {
-    all_cmds='build, quickcheck, test, clean, upload or help'
+    all_cmds='build, quickcheck, test, clean, bump, upload or help'
     cmd="${1:-}"
     if [ $# -gt 1 ]; then
         echo "Error: Too many arguments provided. Expected at most one argument: $all_cmds." 1>&2
@@ -28,8 +28,8 @@ function cli() {
         clean
         exit 0
         ;;
-      -h|--help|help)
-        usage
+      bump)
+        bump
         exit 0
         ;;
       upload)
@@ -39,6 +39,10 @@ function cli() {
         #run_tests
         #TODO @mark: ^
         upload
+        exit 0
+        ;;
+      -h|--help|help)
+        usage
         exit 0
         ;;
       *)
@@ -180,6 +184,39 @@ function run_tests() {
     )
 
     echo 'test done'
+}
+
+function bump() {
+    if [ ! -f "VERSION" ]; then
+        echo 'no VERSION file?' 1>&2
+        exit 1
+    fi
+    
+    current_version=$(cat VERSION | tr -d '\n\r')
+    if [[ ! "$current_version" =~ ^0\.([0-9]+)\.0$ ]]; then
+        echo "Error: VERSION file must contain version in format 0.x.0, found: $current_version" 1>&2
+        exit 1
+    fi
+    new_minor=$(("${BASH_REMATCH[1]}" + 1))
+    new_version="0.$new_minor.0"
+    
+    echo "Bumping version from $current_version to $new_version"
+    
+    echo "$new_version" > VERSION
+    
+    echo "Updating Java version..."
+    sed -i "s|<revision>$current_version</revision>|<revision>$new_version</revision>|" java/pom.xml
+    
+    echo "Updating TypeScript version..."
+    sed -i "s|\"version\": \"[^\"]*\"|\"version\": \"$new_version\"|" typescript/package.json
+    
+    echo "Updating Python version..."
+    sed -i "s|version = \"[^\"]*\"|version = \"$new_version\"|" python/pyproject.toml
+    
+    echo "Updating Rust version..."
+    sed -i "s|version = \"[^\"]*\"|version = \"$new_version\"|" rust/Cargo.toml
+    
+    echo "Version bump completed: $current_version -> $new_version"
 }
 
 function upload() {

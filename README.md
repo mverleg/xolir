@@ -31,7 +31,7 @@ pip install xolir
 
 ```xml
 <dependency>
-    <groupId>nl.markv</groupId>
+    <groupId>com.apivolve</groupId>
     <artifactId>xolir</artifactId>
     <version>0.100.0</version>  <!-- check versions at https://central.sonatype.com/artifact/nl.markv/xolir -->
 </dependency>

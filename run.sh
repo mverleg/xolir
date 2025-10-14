@@ -179,7 +179,7 @@ function build() {
     {
       echo "generating python"
       cd python
-      python -m pip install -q pip build
+      python -m pip install -q pip build grpcio-tools pytest
       bash generate.sh
       pytest -q
       python -m build 1>/dev/null

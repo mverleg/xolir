@@ -1,5 +1,11 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 
+base="$(dirname "$(basename "$0")")"
+if [ "$(pwd)" == "$base" ]; then
+  cd "$base"
+  pwd
+fi
+
 function cli() {
     all_cmds='build, quickcheck, test, clean, bump, upload or help'
     cmd="${1:-}"
@@ -15,11 +21,13 @@ function cli() {
         ;;
       build)
         check
+        venv
         build
         exit 0
         ;;
       ""|test)
         check
+        venv
         build
         run_tests
         exit 0
@@ -30,11 +38,13 @@ function cli() {
         ;;
       bump)
         bump
+        venv
         exit 0
         ;;
       upload)
         echo "Subcommand '$cmd' recognized, only partially implemented!" 1>&2
         check
+        venv
         build
         run_tests
         #run_tests
@@ -70,6 +80,11 @@ If no subcommand is provided, the default build is executed.
 EOF
 }
 
+function venv() {
+    echo 'activating virtual env'
+    python3 -m venv env
+}
+
 function check() {
     bad_files=$(grep -EL '^syntax = "proto3";' proto/xolir/*.proto)
     if [ -n "$bad_files" ]; then
@@ -98,26 +113,32 @@ function check() {
 
 function clean() {
     {
+      echo "cleaning venv"
+      rm -rf venv
+      echo "cleaning venv done"
+    }
+
+    {
       echo "cleaning java"
       cd java
       mvn clean -q -T1C
       rm 'dependency-reduced-pom.xml'
       echo "cleaning java done"
-    } &
+    }
 
     {
       echo "cleaning rust"
       cd rust
       ./cargo-proto clean -q
       echo "cleaning rust done"
-    } &
+    }
 
     {
       echo "cleaning python"
       cd python
-      rm -rf dist/ *.egg-info xolir/
+      rm -rf dist/ *.egg-info xolir/ README.md
       echo "cleaning python done"
-    } &
+    }
 
     {
       echo "cleaning typescript"
@@ -125,9 +146,14 @@ function clean() {
       npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
       rm -rf node_modules/
       echo "cleaning typescript done"
-    } &
+    }
 
-    wait
+    {
+      echo "cleaning tests"
+      rm -rf tests/generated/
+      echo "cleaning tests done"
+    }
+
     echo 'cleaning done'
 }
 
@@ -137,15 +163,17 @@ function build() {
       echo "generating java"
       cd java
       mvn package -q -T1C -Pfat-jar
-      echo "java done"
+      echo "generating java done"
     } &
+    pid_java=$!
 
     {
       echo "generating rust"
       cd rust
       ./cargo-proto build -q
-      echo "rust done"
+      echo "generating rust done"
     } &
+    pid_rust=$!
 
     {
       echo "generating python"
@@ -154,35 +182,38 @@ function build() {
       pytest -q
       bash generate.sh
       python -m build 1>/dev/null
-      echo "python done"
+      echo "generating python done"
     } &
+    pid_python=$!
 
     {
       echo "generating typescript"
       cd typescript
       npm install --silent
       npm run build --silent
-      echo "typescript done"
+      echo "generating typescript done"
     } &
+    pid_typescript=$!
 
-    wait
-    rm 'python/README.md'
+    for pid in $pid_java $pid_rust $pid_python $pid_typescript; do
+        wait $pid
+    done
     echo 'building done'
 }
 
 function run_tests() {
-    base="$(realpath tests)"
-    xolir_pth="$base/euler2.xolir"
+    echo 'running tests'
+    test_base="$(realpath tests)"
+    xolir_pth="$test_base/euler2.xolir"
 
-    # Must have:
-    # pip install protobuf
-    # pip install -U "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
+    pip install protobuf
+    pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
     echo 'generating sample xolir'
-    python3 "$base/create_euler2_xolir.py"
+    python3 "$test_base/create_euler2_xolir.py"
 
     (
       echo 'compiling sample xolir to java'
-      cd "$base/generate_java"
+      cd "$test_base/generate_java"
       MAVEN_OPTS="-ea" mvn compile exec:java -e -q -Dexec.args="$xolir_pth"
     )
 

@@ -5,7 +5,8 @@ import sys
 
 from xolir.builtin_type_pb2 import BuiltinType
 from xolir.builtin_function_pb2 import BuiltinFunc
-from xolir.type_pb2 import TypeRef, TypedName
+from xolir.refs_pb2 import TypeRef
+from xolir.type_pb2 import TypedName
 from xolir.struct_pb2 import Struct
 from xolir.function_pb2 import Function
 from xolir.expression_pb2 import Expression, Read, Store, Call, If, While, Return

@@ -13,3 +13,4 @@ node_modules/
 python/README.md
 python/xolir/
 rust/proto/
+env/

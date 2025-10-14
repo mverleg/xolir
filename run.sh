@@ -83,6 +83,7 @@ EOF
 function venv() {
     echo 'activating virtual env'
     python3 -m venv env
+    source env/bin/activate
 }
 
 function check() {
@@ -112,47 +113,47 @@ function check() {
 }
 
 function clean() {
-    {
+    (
       echo "cleaning venv"
       rm -rf venv
       echo "cleaning venv done"
-    }
+    )
 
-    {
+    (
       echo "cleaning java"
       cd java
       mvn clean -q -T1C
-      rm 'dependency-reduced-pom.xml'
+      rm -f 'dependency-reduced-pom.xml'
       echo "cleaning java done"
-    }
+    )
 
-    {
+    (
       echo "cleaning rust"
       cd rust
       ./cargo-proto clean -q
       echo "cleaning rust done"
-    }
+    )
 
-    {
+    (
       echo "cleaning python"
       cd python
-      rm -rf dist/ *.egg-info xolir/ README.md
+      rm -rf 'dist/' *'.egg-info' 'xolir/' 'README.md'
       echo "cleaning python done"
-    }
+    )
 
-    {
+    (
       echo "cleaning typescript"
       cd typescript
       npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
       rm -rf node_modules/
       echo "cleaning typescript done"
-    }
+    )
 
-    {
+    (
       echo "cleaning tests"
       rm -rf tests/generated/
       echo "cleaning tests done"
-    }
+    )
 
     echo 'cleaning done'
 }
@@ -179,8 +180,8 @@ function build() {
       echo "generating python"
       cd python
       python -m pip install -q pip build
-      pytest -q
       bash generate.sh
+      pytest -q
       python -m build 1>/dev/null
       echo "generating python done"
     } &
@@ -195,9 +196,10 @@ function build() {
     } &
     pid_typescript=$!
 
-    for pid in $pid_java $pid_rust $pid_python $pid_typescript; do
-        wait $pid
-    done
+    wait $pid_java || { echo "JAVA FAILED"; exit 1; }
+    wait $pid_rust || { echo "RUST FAILED"; exit 1; }
+    wait $pid_python || { echo "PYTHON FAILED"; exit 1; }
+    wait $pid_typescript || { echo "TYPESCRIPT FAILED"; exit 1; }
     echo 'building done'
 }
 

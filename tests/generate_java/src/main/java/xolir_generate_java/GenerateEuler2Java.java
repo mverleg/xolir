@@ -1,6 +1,5 @@
 package xolir_generate_java;
 
-import xolir.BuiltinFunction;
 import xolir.ExpressionOuterClass;
 
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.apivolve.xolir.ProgramOuterClass.Program;
 import static xolir.BuiltinTypeOuterClass.BuiltinType;
 import static xolir.ExpressionOuterClass.Expression;
 import static xolir.FunctionOuterClass.Function;
@@ -38,7 +38,7 @@ public class GenerateEuler2Java {
         return FileSystems.getDefault().getPath(args[0]);
     }
 
-    private static Path buildOutputPath(Path inputPath, TelProgram tel) {
+    private static Path buildOutputPath(Path inputPath, Program tel) {
         var dirPath = Path.of(inputPath.getParent().toString(), "generated", "src", "main", "java");
         try {
             Files.createDirectories(dirPath);

@@ -22,9 +22,9 @@
     <dependencies>
         <dependency>
             <!-- need to install target/java with correct version-->
-            <groupId>com.apivolve</groupId>
+            <groupId>nl.markv</groupId>
             <artifactId>xolir</artifactId>
-            <version>test-SNAPSHOT</version>
+            <version>local-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

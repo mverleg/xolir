@@ -163,7 +163,7 @@ function build() {
     {
       echo "generating java"
       cd java
-      mvn package -q -T1C -Pfat-jar
+      mvn install -q -T1C -Drevision=local-SNAPSHOT
       echo "generating java done"
     } &
     pid_java=$!
@@ -207,16 +207,21 @@ function run_tests() {
     echo 'running tests'
     test_base="$(realpath tests)"
     xolir_pth="$test_base/euler2.xolir"
+    pb_bin_pth="$(mktemp)"
 
-    pip install protobuf
-    pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
-    echo 'generating sample xolir'
-    python3 "$test_base/create_euler2_xolir.py"
+    (
+      echo 'generating sample xolir'
+      pip install protobuf
+      pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
+      python3 "$test_base/create_euler2_xolir.py" "$pb_bin_pth"
+      echo "generated xolir bytes in $pb_bin_pth"
+    )
 
     (
       echo 'compiling sample xolir to java'
       cd "$test_base/generate_java"
-      MAVEN_OPTS="-ea" mvn compile exec:java -e -q -Dexec.args="$xolir_pth"
+      # "$pb_bin_pth"
+      MAVEN_OPTS="-ea" mvn compile exec:java -q -Dexec.args="$xolir_pth"
     )
 
     echo 'test done'

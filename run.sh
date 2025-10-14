@@ -36,6 +36,7 @@ function cli() {
         echo "Subcommand '$cmd' recognized, only partially implemented!" 1>&2
         check
         build
+        run_tests
         #run_tests
         #TODO @mark: ^
         upload
@@ -100,6 +101,7 @@ function clean() {
       echo "cleaning java"
       cd java
       mvn clean -q -T1C
+      rm 'dependency-reduced-pom.xml'
       echo "cleaning java done"
     } &
 
@@ -121,6 +123,7 @@ function clean() {
       echo "cleaning typescript"
       cd typescript
       npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
+      rm -rf node_modules/
       echo "cleaning typescript done"
     } &
 
@@ -148,9 +151,8 @@ function build() {
       echo "generating python"
       cd python
       python -m pip install -q pip build
-      python -m build 1>/dev/null
       pytest -q
-      # twine upload
+      python -m build 1>/dev/null
       echo "python done"
     } &
 
@@ -173,7 +175,7 @@ function run_tests() {
 
     # Must have:
     # pip install protobuf
-    # pip install -e "$(git rev-parse --show-toplevel)/target/python"
+    # pip install -U "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
     echo 'generating sample xolir'
     python3 "$base/create_euler2_xolir.py"
 

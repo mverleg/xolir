@@ -5,6 +5,7 @@ from setuptools.command.build_py import build_py as build_py_orig
 from setuptools.command.sdist import sdist as sdist_orig
 import pathlib, shutil
 
+
 class sdist_with_proto(sdist_orig):
     def make_release_tree(self, base_dir, files):
         super().make_release_tree(base_dir, files)
@@ -13,6 +14,7 @@ class sdist_with_proto(sdist_orig):
         target = pathlib.Path(base_dir) / "proto"
         if repo_proto.exists():
             shutil.copytree(repo_proto, target, dirs_exist_ok=True)
+
 
 class ProtocBuildCommand(build_py_orig):
     """Custom build_py to generate gRPC Python code before packaging."""
@@ -24,7 +26,9 @@ class ProtocBuildCommand(build_py_orig):
         out_dir = os.path.join(os.path.dirname(__file__), "xolir")
         os.makedirs(out_dir, exist_ok=True)
 
-        for filename in os.listdir(proto_dir):
+        proto_entries = list(os.listdir(proto_dir))
+        assert proto_entries, "No proto files found"
+        for filename in proto_entries:
             if filename.endswith(".proto"):
                 proto_file = os.path.join(proto_dir, filename)
                 protoc.main([

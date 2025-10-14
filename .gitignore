@@ -11,4 +11,5 @@ __pycache__/
 dependency-reduced-pom.xml
 node_modules/
 python/README.md
+python/xolir/
 rust/proto/

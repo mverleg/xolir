@@ -115,7 +115,7 @@ function clean() {
     {
       echo "cleaning python"
       cd python
-      rm -rf dist/ *.egg-info
+      rm -rf dist/ *.egg-info xolir/
       echo "cleaning python done"
     } &
 
@@ -152,6 +152,7 @@ function build() {
       cd python
       python -m pip install -q pip build
       pytest -q
+      bash generate.sh
       python -m build 1>/dev/null
       echo "python done"
     } &

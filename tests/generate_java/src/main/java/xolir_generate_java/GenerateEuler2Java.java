@@ -1,6 +1,6 @@
 package xolir_generate_java;
 
-import xolir.ExpressionOuterClass;
+import com.apivolve.xolir.ExpressionOuterClass;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,12 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 import static com.apivolve.xolir.ProgramOuterClass.Program;
-import static xolir.BuiltinTypeOuterClass.BuiltinType;
-import static xolir.ExpressionOuterClass.Expression;
-import static xolir.FunctionOuterClass.Function;
-import static xolir.StructOuterClass.Struct;
-import static xolir.Tel.TelProgram;
-import static xolir.Type.TypedName;
+import static com.apivolve.xolir.ExpressionOuterClass.Expression;
+import static com.apivolve.xolir.FunctionOuterClass.Function;
+import static com.apivolve.xolir.TypeStruct.StructType;
+import static com.apivolve.xolir.Refs.TypedName;
+import static com.apivolve.xolir.Refs.TypeRef;
+import static com.apivolve.xolir.BuiltinTypeOuterClass.BuiltinType;
+
+import com.apivolve.xolir.BuiltinFunction.BuiltinFunc;
+import com.apivolve.xolir.Type.TypeDef;
 
 public class GenerateEuler2Java {
     private static final Set<String> KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "void", "volatile", "while");
@@ -48,33 +51,37 @@ public class GenerateEuler2Java {
         return Path.of(dirPath.toString(), safeName(tel.getProgramName(), true) + ".java");
     }
 
-    private static TelProgram readTel(Path inputPath) {
+    private static Program readTel(Path inputPath) {
         try {
             var proto = Files.readAllBytes(inputPath);
-            return TelProgram.parseFrom(proto);
+            return Program.parseFrom(proto);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    private static void compileToJava(TelProgram tel, Path outputPath) {
+    private static void compileToJava(Program tel, Path outputPath) {
         try (PrintWriter writer = new PrintWriter(outputPath.toFile(), StandardCharsets.UTF_8)) {
-            for (var source : tel.getSourcesList()) {
+            for (var source : tel.getFilesList()) {
                 writer.println("\n// ** Tel source: " + source.getName() + " **");
                 source.getSource().lines().forEach(line -> writer.println("//   " + line));
             }
             writer.println("\n@javax.annotation.processing.Generated(\"xolir\")  // do not edit");
             writer.println("public class " + safeName(tel.getProgramName(), true) + " {\n");
-            compileStructs(writer, tel.getStructsList());
-            var functions = tel.getFunctionsList().stream().map(f -> new Func(safeName(f.getName(), false))).toList();
-            compileFunctions(writer, tel.getFunctionsList(), functions);
+            var structTypes = tel.getTypesList().stream()
+                    .filter(td -> td.getTargetCase() == TypeDef.TargetCase.STRUCT)
+                    .map(TypeDef::getStruct)
+                    .toList();
+            compileStructs(writer, structTypes);
+            var functions = tel.getFuncsList().stream().map(f -> new Func(safeName(f.getName(), false))).toList();
+            compileFunctions(writer, tel.getFuncsList(), functions);
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    private static void compileStructs(PrintWriter writer, List<Struct> structs) {
+    private static void compileStructs(PrintWriter writer, List<StructType> structs) {
         for (var cls : structs) {
             String safeClsName = safeName(cls.getName(), true);
             if (!safeClsName.equals(cls.getName())) {
@@ -88,18 +95,18 @@ public class GenerateEuler2Java {
 
     private static void compileFunctions(PrintWriter writer, List<Function> functions, List<Func> funcs) {
         for (var func : functions) {
-            assert func.getResultsList().size() <= 1 : "multiple return values not supported yet";
+            assert func.getTyp().getResultsList().size() <= 1 : "multiple return values not supported yet";
             String safeFuncName = safeName(func.getName(), false);
             if (!safeFuncName.equals(func.getName())) {
                 writer.println("\t// " + func.getName());
             }
-            writer.print("\tprivate static " + (func.getResultsList().isEmpty() ? "void" : builtinType(func.getResultsList().get(0).getBuiltin())));
+            writer.print("\tprivate static " + (func.getTyp().getResultsList().isEmpty() ? "void" : builtinType(func.getTyp().getResultsList().get(0))));
             writer.print(" " + safeFuncName + "(");
-            var arg_vars = generateArgument(func.getArgsList(), writer);
+            var arg_vars = generateArgument(func.getTyp().getArgsList(), writer);
             var variables = new ArrayList<>(arg_vars);
             writer.println(") {");
             for (var local : func.getLocalsList()) {
-                var javaType = builtinType(local.getTyp().getBuiltin());
+                var javaType = builtinType(local.getTypeId());
                 var javaName = safeName(local.getName(), false);
                 variables.add(new Variable(javaType, javaName));
                 writer.println("\t\t" + javaType + " " + javaName + ";");
@@ -128,12 +135,13 @@ public class GenerateEuler2Java {
             }
             case CALL -> {
                 ExpressionOuterClass.Call call = expr.getCall();
-                switch (call.getTargetCase()) {
+                var funcRef = call.getFunc();
+                switch (funcRef.getTargetCase()) {
                     case BUILTIN -> {
-                        compileBuiltinFunc(writer, call.getBuiltin(), call.getArgumentsList(), funcs, variables, indent);
+                        compileBuiltinFunc(writer, funcRef.getBuiltin(), call.getArgumentsList(), funcs, variables, indent);
                     }
                     case FUNC_IX -> {
-                        writer.print(funcs.get(call.getFuncIx()).name() + "(");
+                        writer.print(funcs.get((int) funcRef.getFuncIx()).name() + "(");
                         boolean first = true;
                         for (var arg : call.getArgumentsList()) {
                             if (first) {
@@ -206,7 +214,7 @@ public class GenerateEuler2Java {
             } else {
                 writer.print(",\n");
             }
-            var javaType = builtinType(field.getTyp().getBuiltin());
+            var javaType = builtinType(field.getTypeId());
             var javaName = safeName(field.getName(), false);
             variables.add(new Variable(javaType, javaName));
             writer.print("\t\t" + javaType + " " + javaName);
@@ -215,13 +223,17 @@ public class GenerateEuler2Java {
         return variables;
     }
 
-    private static String builtinType(BuiltinType bultinType) {
-        return switch (bultinType) {
-            case S_INT_32 -> "int";
-            case S_INT_64 -> "long";
-            case REAL_64 -> "double";
-            case BOOL -> "boolean";
-            case UNRECOGNIZED -> throw new AssertionError("unrecognized type");
+    private static String builtinType(TypeRef typeRef) {
+        return switch (typeRef.getTargetCase()) {
+            case BUILTIN -> switch (typeRef.getBuiltin()) {
+                case S_INT_32 -> "int";
+                case S_INT_64 -> "long";
+                case REAL_64 -> "double";
+                case BOOL -> "boolean";
+                case UNRECOGNIZED -> throw new AssertionError("unrecognized builtin type");
+            };
+            case TYPE_ID -> throw new AssertionError("only builtin types supported for Java output in this test");
+            case TARGET_NOT_SET -> throw new AssertionError("type not set");
         };
     }
 
@@ -229,7 +241,7 @@ public class GenerateEuler2Java {
 
     private record Variable(String type, String name) {}
 
-    private static void compileBuiltinFunc(PrintWriter writer, BuiltinFunction.BuiltinFunc builtin, List<Expression> argumentsList, List<Func> funcs, List<Variable> variables, int indent) {
+    private static void compileBuiltinFunc(PrintWriter writer, BuiltinFunc builtin, List<Expression> argumentsList, List<Func> funcs, List<Variable> variables, int indent) {
         var myBinaryOp = switch (builtin) {
             case ADD_U32 -> "+";
             case SUB_U32 -> "-";

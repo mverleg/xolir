@@ -27,7 +27,7 @@ cargo add xolir
 pip install xolir
 ```
 
-[Java (nexus)](https://central.sonatype.com/artifact/nl.markv/xolir):
+[Java (nexus)](https://repo1.maven.org/maven2/com/apivolve/xolir/0.1.0/):
 
 ```xml
 <dependency>

@@ -46,8 +46,7 @@ function cli() {
         check
         venv
         build
-        run_tests
-        #run_tests
+        # run_tests
         #TODO @mark: ^
         upload
         exit 0

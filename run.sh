@@ -205,7 +205,6 @@ function build() {
 function run_tests() {
     echo 'running tests'
     test_base="$(realpath tests)"
-    xolir_pth="$test_base/euler2.xolir"
     pb_bin_pth="$(mktemp)"
 
     (
@@ -220,7 +219,7 @@ function run_tests() {
       echo 'compiling sample xolir to java'
       cd "$test_base/generate_java"
       # "$pb_bin_pth"
-      MAVEN_OPTS="-ea" mvn compile exec:java -q -Dexec.args="$xolir_pth"
+      MAVEN_OPTS="-ea" mvn compile exec:java -q -Dexec.args="$pb_bin_pth"
     )
 
     echo 'test done'

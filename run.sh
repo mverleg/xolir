@@ -236,7 +236,7 @@ function run_tests() {
     (
       set -eEu -o pipefail
       echo 'run generated java'
-      cd "$(dirname "$pb_bin_pth")"
+      cd "$(dirname "$pb_bin_pth")/generated"
       MAVEN_OPTS="-ea" show_run mvn compile exec:java -q
     )
 

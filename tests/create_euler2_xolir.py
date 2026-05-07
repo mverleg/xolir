@@ -46,6 +46,7 @@ def even_fib_sub(max):
     binaries=[
         Binary(
             name="euler2",
+            description="Sum of even Fibonacci numbers below 4 million (Euler problem 2).",
             code=[
                 Expression(call=Call(func=FuncRef(func_ix=0), arguments=[Expression(int=4_000_000)])),
             ],

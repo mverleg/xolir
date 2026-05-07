@@ -11,6 +11,7 @@ import "xolir/refs.proto";
 // other functions. Names must be unique across binaries.
 message Binary {
   string name = 1;
-  repeated TypedName locals = 2;
-  repeated Expression code = 3;
+  string description = 2;
+  repeated TypedName locals = 3;
+  repeated Expression code = 4;
 }

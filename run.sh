@@ -215,7 +215,7 @@ function build() {
 function run_tests() {
     echo 'running tests'
     test_base="$(realpath tests)"
-    pb_bin_pth="$test_base/euler2.xolir"
+    pb_bin_pth="$test_base/generated/euler2.xolir"
 
     (
       set -eEu -o pipefail

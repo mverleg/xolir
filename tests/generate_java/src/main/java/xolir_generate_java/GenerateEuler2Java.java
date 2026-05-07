@@ -29,9 +29,10 @@ public class GenerateEuler2Java {
     public static void main(String[] args) {
         var inputPath = getInputPath(args);
         var tel = readTel(inputPath);
-        var outputPath = buildOutputPath(inputPath, tel);
-        System.out.printf("read program from %s, writing to %s%n", inputPath, outputPath);
-        compileToJava(tel, outputPath);
+        var javaOutputPath = buildOutputPath(inputPath, tel);
+        System.out.printf("read program from %s, writing to %s%n", inputPath, javaOutputPath);
+        compileToJava(tel, javaOutputPath);
+        generatePomfile(tel, pomOutputPath);
     }
 
     private static Path getInputPath(String[] args) {
@@ -77,6 +78,57 @@ public class GenerateEuler2Java {
             var functions = tel.getFuncsList().stream().map(f -> new Func(safeName(f.getName(), false))).toList();
             compileFunctions(writer, tel.getFuncsList(), functions);
             writer.println("}");
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private static void generatePomfile(Program tel, Path outputPath) {
+        try (PrintWriter writer = new PrintWriter(outputPath.toFile(), StandardCharsets.UTF_8)) {
+            // TODO @mark: generate this
+            """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                <modelVersion>4.0.0</modelVersion>
+
+                <groupId>local.test</groupId> <!-- local.$programName -->
+                <artifactId>test</artifactId>  <!-- $programName -->
+                <version>test-SNAPSHOT</version>
+                <packaging>jar</packaging>
+
+                <name>${project.artifactId}</name>
+                <description>Test xolir codegen</description>
+                <url>https://github.com/mverleg/xolir</url>
+
+                <properties>
+                    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                </properties>
+                <dependencies></dependencies>
+
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.10.1</version>
+                            <configuration>
+                                <source>17</source>
+                                <target>17</target>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <version>3.5.0</version>
+                            <configuration>
+                                <mainClass>Euler2</mainClass>  <!-- java file name -->
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+            </project>
+            """
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }

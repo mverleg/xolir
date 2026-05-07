@@ -163,15 +163,24 @@ public class GenerateEuler2Java {
     private static void compileFunctions(PrintWriter writer, List<Function> functions, List<Func> funcs) {
         for (var func : functions) {
             assert func.getTyp().getResultsList().size() <= 1 : "multiple return values not supported yet";
+            var isEntrypoint = "main".equals(func.getName())
+                    && func.getTyp().getArgsList().isEmpty()
+                    && func.getTyp().getResultsList().isEmpty();
             String safeFuncName = safeName(func.getName(), false);
             if (!safeFuncName.equals(func.getName())) {
                 writer.println("\t// " + func.getName());
             }
-            writer.print("\tprivate static " + (func.getTyp().getResultsList().isEmpty() ? "void" : builtinType(func.getTyp().getResultsList().get(0))));
-            writer.print(" " + safeFuncName + "(");
-            var arg_vars = generateArgument(func.getTyp().getArgsList(), writer);
-            var variables = new ArrayList<>(arg_vars);
-            writer.println(") {");
+            ArrayList<Variable> variables;
+            if (isEntrypoint) {
+                writer.println("\tpublic static void main(String[] args) {");
+                variables = new ArrayList<>();
+            } else {
+                writer.print("\tprivate static " + (func.getTyp().getResultsList().isEmpty() ? "void" : builtinType(func.getTyp().getResultsList().get(0))));
+                writer.print(" " + safeFuncName + "(");
+                var arg_vars = generateArgument(func.getTyp().getArgsList(), writer);
+                variables = new ArrayList<>(arg_vars);
+                writer.println(") {");
+            }
             for (var local : func.getLocalsList()) {
                 var javaType = builtinType(local.getTypeId());
                 var javaName = safeName(local.getName(), false);

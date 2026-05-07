@@ -51,7 +51,7 @@ def even_fib_sub(max):
             ),
             code=[
                 Expression(call=Call(func=FuncRef(func_ix=1), arguments=[Expression(int=4_000_000)])),
-                Expression(return_=Return(value=Expression(int=0))),
+                # Expression(return_=Return(value=Expression(int=0))),
             ],
         ),
         Function(

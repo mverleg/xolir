@@ -1,3 +1,4 @@
+import os
 import sys
 
 # Depends on python/dist/, install e.g.
@@ -103,6 +104,7 @@ def even_fib_sub(max):
 print(prog)
 
 assert len(sys.argv) >= 2, "first arg must be output path"
+os.makedirs(os.path.dirname(sys.argv[1]), exist_ok=True)
 with open(sys.argv[1], 'wb+') as f:
     f.write(prog.SerializeToString())
 

@@ -30,6 +30,7 @@ public class GenerateEuler2Java {
         var inputPath = getInputPath(args);
         var tel = readTel(inputPath);
         var outputPath = buildOutputPath(inputPath, tel);
+        System.out.printf("read program from %s, writing to %s%n", inputPath, outputPath);
         compileToJava(tel, outputPath);
     }
 

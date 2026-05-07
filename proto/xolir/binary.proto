@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+package xolir;
+option java_package = "com.apivolve.xolir";
+
+import "xolir/expression.proto";
+import "xolir/refs.proto";
+
+// Top-level executable entry point. Behaves like a function with no args
+// that implicitly returns an integer exit code. Cannot be called from
+// other functions. Names must be unique across binaries.
+message Binary {
+  string name = 1;
+  repeated TypedName locals = 2;
+  repeated Expression code = 3;
+}

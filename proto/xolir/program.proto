@@ -3,6 +3,7 @@ syntax = "proto3";
 package xolir;
 option java_package = "com.apivolve.xolir";
 
+import "xolir/binary.proto";
 import "xolir/debug.proto";
 import "xolir/function.proto";
 import "xolir/type.proto";
@@ -14,4 +15,5 @@ message Program {
   repeated SourceFile files = 1;
   repeated TypeDef types = 2;
   repeated Function funcs = 3;
+  repeated Binary binaries = 4;
 }

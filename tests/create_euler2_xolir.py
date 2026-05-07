@@ -12,6 +12,7 @@ from xolir.type_struct_pb2 import StructType
 from xolir.function_pb2 import Function, FunctionType
 from xolir.expression_pb2 import Expression, Read, Store, Call, If, While, Return
 from xolir.debug_pb2 import SourceFile
+from xolir.binary_pb2 import Binary
 from xolir.program_pb2 import Program
 
 prog = Program(
@@ -42,18 +43,15 @@ def even_fib_sub(max):
             ),
         ),
     ],
-    funcs=[
-        Function(
-            name="main",
-            typ=FunctionType(
-                args=[],
-                results=[],
-            ),
+    binaries=[
+        Binary(
+            name="euler2",
             code=[
-                Expression(call=Call(func=FuncRef(func_ix=1), arguments=[Expression(int=4_000_000)])),
-                # Expression(return_=Return(value=Expression(int=0))),
+                Expression(call=Call(func=FuncRef(func_ix=0), arguments=[Expression(int=4_000_000)])),
             ],
         ),
+    ],
+    funcs=[
         Function(
             name="even_fib_sub",
             typ=FunctionType(

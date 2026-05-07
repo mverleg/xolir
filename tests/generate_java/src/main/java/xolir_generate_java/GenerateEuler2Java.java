@@ -15,6 +15,7 @@ import java.util.Set;
 import static com.apivolve.xolir.ProgramOuterClass.Program;
 import static com.apivolve.xolir.ExpressionOuterClass.Expression;
 import static com.apivolve.xolir.FunctionOuterClass.Function;
+import static com.apivolve.xolir.BinaryOuterClass.Binary;
 import static com.apivolve.xolir.TypeStruct.StructType;
 import static com.apivolve.xolir.Refs.TypedName;
 import static com.apivolve.xolir.Refs.TypeRef;
@@ -90,6 +91,7 @@ public class GenerateEuler2Java {
                 .map(f -> new Func(safeName(f.getName(), false)))
                 .toList();
             compileFunctions(writer, tel.getFuncsList(), functions);
+            compileBinaries(writer, tel.getBinariesList(), functions);
             writer.println("}");
         } catch (IOException exception) {
             throw new RuntimeException(exception);
@@ -163,33 +165,36 @@ public class GenerateEuler2Java {
     private static void compileFunctions(PrintWriter writer, List<Function> functions, List<Func> funcs) {
         for (var func : functions) {
             assert func.getTyp().getResultsList().size() <= 1 : "multiple return values not supported yet";
-            var isEntrypoint = "main".equals(func.getName())
-                    && func.getTyp().getArgsList().isEmpty()
-                    && func.getTyp().getResultsList().isEmpty();
             String safeFuncName = safeName(func.getName(), false);
             if (!safeFuncName.equals(func.getName())) {
                 writer.println("\t// " + func.getName());
             }
-            ArrayList<Variable> variables;
-            if (isEntrypoint) {
-                writer.println("\tpublic static void main(String[] args) {");
-                variables = new ArrayList<>();
-            } else {
-                writer.print("\tprivate static " + (func.getTyp().getResultsList().isEmpty() ? "void" : builtinType(func.getTyp().getResultsList().get(0))));
-                writer.print(" " + safeFuncName + "(");
-                var arg_vars = generateArgument(func.getTyp().getArgsList(), writer);
-                variables = new ArrayList<>(arg_vars);
-                writer.println(") {");
-            }
-            for (var local : func.getLocalsList()) {
-                var javaType = builtinType(local.getTypeId());
-                var javaName = safeName(local.getName(), false);
-                variables.add(new Variable(javaType, javaName));
-                writer.println("\t\t" + javaType + " " + javaName + ";");
-            }
-            compileStatements(writer, func.getCodeList(), funcs, variables, 2);
-            writer.println("\t}\n");
+            writer.print("\tprivate static " + (func.getTyp().getResultsList().isEmpty() ? "void" : builtinType(func.getTyp().getResultsList().get(0))));
+            writer.print(" " + safeFuncName + "(");
+            var arg_vars = generateArgument(func.getTyp().getArgsList(), writer);
+            var variables = new ArrayList<>(arg_vars);
+            writer.println(") {");
+            compileLocalsAndCode(writer, func.getLocalsList(), func.getCodeList(), funcs, variables);
         }
+    }
+
+    private static void compileBinaries(PrintWriter writer, List<Binary> binaries, List<Func> funcs) {
+        for (var bin : binaries) {
+            writer.println("\t// binary " + bin.getName());
+            writer.println("\tpublic static void main(String[] args) {");
+            compileLocalsAndCode(writer, bin.getLocalsList(), bin.getCodeList(), funcs, new ArrayList<>());
+        }
+    }
+
+    private static void compileLocalsAndCode(PrintWriter writer, List<TypedName> locals, List<Expression> code, List<Func> funcs, ArrayList<Variable> variables) {
+        for (var local : locals) {
+            var javaType = builtinType(local.getTypeId());
+            var javaName = safeName(local.getName(), false);
+            variables.add(new Variable(javaType, javaName));
+            writer.println("\t\t" + javaType + " " + javaName + ";");
+        }
+        compileStatements(writer, code, funcs, variables, 2);
+        writer.println("\t}\n");
     }
 
     private static void compileStatements(PrintWriter writer, List<Expression> stmts, List<Func> funcs, List<Variable> variables, int indent) {

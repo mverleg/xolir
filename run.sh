@@ -1,6 +1,11 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
 set -eEu -o pipefail
 
+function show_run() {
+    echo "\$ $* # in $(pwd)"
+    "$@"
+}
+
 base="$(dirname "$(basename "$0")")"
 if [ "$(pwd)" == "$base" ]; then
   cd "$base"
@@ -69,7 +74,7 @@ usage() {
 Usage: $(basename "$0") [subcommand]
 
 Subcommands:
-  quickcheck Valiate the proto files
+  quickcheck validate the proto files
   build    Build/generate artifacts (not implemented yet)
   test     Run tests after building artifacts
   clean    Clean generated/build artifacts (not implemented yet)
@@ -82,7 +87,7 @@ EOF
 
 function venv() {
     echo 'activating virtual env'
-    python3 -m venv env
+    show_run python3 -m venv env
     source env/bin/activate
 }
 
@@ -115,14 +120,14 @@ function check() {
 function clean() {
     (
       echo "cleaning venv"
-      rm -rf venv
+      show_run rm -rf venv
       echo "cleaning venv done"
     )
 
     (
       echo "cleaning java"
       cd java
-      mvn clean -q -T1C
+      show_run mvn clean -q -T1C
       rm -f 'dependency-reduced-pom.xml'
       echo "cleaning java done"
     )
@@ -130,28 +135,28 @@ function clean() {
     (
       echo "cleaning rust"
       cd rust
-      ./cargo-proto clean -q
+      show_run ./cargo-proto clean -q
       echo "cleaning rust done"
     )
 
     (
       echo "cleaning python"
       cd python
-      rm -rf 'dist/' *'.egg-info' 'xolir/' 'README.md'
+      show_run rm -rf 'dist/' *'.egg-info' 'xolir/' 'README.md'
       echo "cleaning python done"
     )
 
     (
       echo "cleaning typescript"
       cd typescript
-      npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
+      show_run npm run clean --silent 2>/dev/null || rm -rf dist/ generated/ node_modules/
       rm -rf node_modules/
       echo "cleaning typescript done"
     )
 
     (
       echo "cleaning tests"
-      rm -rf tests/generated/
+      show_run rm -rf tests/generated/
       echo "cleaning tests done"
     )
 
@@ -164,7 +169,7 @@ function build() {
       set -eEu -o pipefail
       echo "generating java"
       cd java
-      mvn install -q -T1C -Drevision=local-SNAPSHOT -Dgpg.skip=true
+      show_run mvn install -q -T1C -Drevision=local-SNAPSHOT -Dgpg.skip=true
       echo "generating java done"
     } &
     pid_java=$!
@@ -173,7 +178,7 @@ function build() {
       set -eEu -o pipefail
       echo "generating rust"
       cd rust
-      ./cargo-proto build -q
+      show_run ./cargo-proto build -q
       echo "generating rust done"
     } &
     pid_rust=$!
@@ -182,10 +187,10 @@ function build() {
       set -eEu -o pipefail
       echo "generating python"
       cd python
-      python -m pip install -q pip build grpcio-tools pytest
-      bash generate.sh
-      pytest -q
-      python -m build 1>/dev/null
+      show_run python3 -m pip install -q pip build grpcio-tools pytest
+      show_run bash generate.sh
+      show_run pytest -q
+      show_run python3 -m build 1>/dev/null
       echo "generating python done"
     } &
     pid_python=$!
@@ -194,8 +199,8 @@ function build() {
       set -eEu -o pipefail
       echo "generating typescript"
       cd typescript
-      npm install --silent
-      npm run build --silent
+      show_run npm install --silent
+      show_run npm run build --silent
       echo "generating typescript done"
     } &
     pid_typescript=$!
@@ -210,14 +215,14 @@ function build() {
 function run_tests() {
     echo 'running tests'
     test_base="$(realpath tests)"
-    pb_bin_pth="$(mktemp)"
+    pb_bin_pth="$(mktemp).xolir"
 
     (
       set -eEu -o pipefail
       echo 'generating sample xolir'
-      pip install protobuf
-      pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
-      python3 "$test_base/create_euler2_xolir.py" "$pb_bin_pth"
+      show_run pip install protobuf
+      show_run pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
+      show_run python3 "$test_base/create_euler2_xolir.py" "$pb_bin_pth"
       echo "generated xolir bytes in $pb_bin_pth"
     )
 
@@ -225,8 +230,7 @@ function run_tests() {
       set -eEu -o pipefail
       echo 'compiling sample xolir to java'
       cd "$test_base/generate_java"
-      # "$pb_bin_pth"
-      MAVEN_OPTS="-ea" mvn compile exec:java -q -Dexec.args="$pb_bin_pth"
+      MAVEN_OPTS="-ea" show_run mvn compile exec:java -q -Dexec.args="$pb_bin_pth"
     )
 
     echo 'test done'
@@ -288,28 +292,28 @@ function upload() {
     (
       echo "uploading python"
       cd python
-      python -m twine upload dist/*
+      show_run python3 -m twine upload dist/*
       echo "python upload done"
     ) || printf "\033[0;31mPYTHON UPLOAD FAILED!!\033[0m\n" 1>&2
 
     (
       echo "uploading rust"
       cd rust
-      ./cargo-proto publish -q
+      show_run ./cargo-proto publish -q
       echo "rust upload done"
     ) || printf "\033[0;31mRUST UPLOAD FAILED!!\033[0m\n" 1>&2
 
     (
       echo "uploading typescript"
       cd typescript
-      npm publish
+      show_run npm publish
       echo "typescript upload done"
     ) || printf "\033[0;31mTYPESCRIPT UPLOAD FAILED!!\033[0m\n" 1>&2
 
     (
       echo "uploading java"
       cd java
-      mvn package deploy -q -T1C
+      show_run mvn package deploy -q -T1C
       echo "java upload done"
     ) || printf "\033[0;31mJAVA UPLOAD FAILED!!\033[0m\n" 1>&2
 

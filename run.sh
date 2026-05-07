@@ -215,7 +215,7 @@ function build() {
 function run_tests() {
     echo 'running tests'
     test_base="$(realpath tests)"
-    pb_bin_pth="$test_base/generated/euler2.xolir"
+    pb_bin_pth="$test_base/out/euler2.xolir"
 
     (
       set -eEu -o pipefail
@@ -231,6 +231,13 @@ function run_tests() {
       echo 'compiling sample xolir to java'
       cd "$test_base/generate_java"
       MAVEN_OPTS="-ea" show_run mvn compile exec:java -q -Dexec.args="$pb_bin_pth"
+    )
+
+    (
+      set -eEu -o pipefail
+      echo 'run generated java'
+      cd "$(dirname "$pb_bin_pth")"
+      MAVEN_OPTS="-ea" show_run mvn compile exec:java -q
     )
 
     echo 'test done'

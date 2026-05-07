@@ -14,3 +14,5 @@ python/README.md
 python/xolir/
 rust/proto/
 env/
+.claude/
+

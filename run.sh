@@ -1,4 +1,5 @@
 #!/usr/bin/env -S bash -eEu -o pipefail
+set -eEu -o pipefail
 
 base="$(dirname "$(basename "$0")")"
 if [ "$(pwd)" == "$base" ]; then
@@ -160,14 +161,16 @@ function clean() {
 function build() {
     cp 'README.md' 'python/README.md'
     {
+      set -eEu -o pipefail
       echo "generating java"
       cd java
-      mvn install -q -T1C -Drevision=local-SNAPSHOT
+      mvn install -q -T1C -Drevision=local-SNAPSHOT -Dgpg.skip=true
       echo "generating java done"
     } &
     pid_java=$!
 
     {
+      set -eEu -o pipefail
       echo "generating rust"
       cd rust
       ./cargo-proto build -q
@@ -176,6 +179,7 @@ function build() {
     pid_rust=$!
 
     {
+      set -eEu -o pipefail
       echo "generating python"
       cd python
       python -m pip install -q pip build grpcio-tools pytest
@@ -187,6 +191,7 @@ function build() {
     pid_python=$!
 
     {
+      set -eEu -o pipefail
       echo "generating typescript"
       cd typescript
       npm install --silent
@@ -208,6 +213,7 @@ function run_tests() {
     pb_bin_pth="$(mktemp)"
 
     (
+      set -eEu -o pipefail
       echo 'generating sample xolir'
       pip install protobuf
       pip install --force-reinstall "python/dist/xolir-$(cat VERSION)-py3-none-any.whl"
@@ -216,6 +222,7 @@ function run_tests() {
     )
 
     (
+      set -eEu -o pipefail
       echo 'compiling sample xolir to java'
       cd "$test_base/generate_java"
       # "$pb_bin_pth"

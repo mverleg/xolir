@@ -15,4 +15,4 @@ python/xolir/
 rust/proto/
 env/
 .claude/
-
+out/

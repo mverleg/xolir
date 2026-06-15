@@ -142,7 +142,7 @@ function clean() {
     (
       echo "cleaning python"
       cd python
-      show_run rm -rf 'dist/' *'.egg-info' 'xolir/' 'README.md'
+      show_run rm -rf 'dist/' *'.egg-info' 'xolir/' 'tel-top.md'
       echo "cleaning python done"
     )
 
@@ -164,7 +164,7 @@ function clean() {
 }
 
 function build() {
-    cp 'README.md' 'python/README.md'
+    cp 'tel-top.md' 'python/tel-top.md'
     {
       set -eEu -o pipefail
       echo "generating java"
